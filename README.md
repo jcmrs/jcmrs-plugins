@@ -1,6 +1,6 @@
 # JCMRS Marketplace for Claude Code Plugins
 
-A curated marketplace of high-quality Claude Code plugins extending the Axivo behavioral programming collaboration platform.
+A curated marketplace of Claude Code plugins.
 
 ## Available Plugins
 
@@ -43,4 +43,4 @@ BSD-3-Clause
 
 ## Contributing
 
-This marketplace extends the Axivo collaboration platform. Contributions welcome!
+Contributions welcome!

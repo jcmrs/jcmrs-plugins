@@ -1,41 +1,13 @@
 {
   "name": "jcmrs-plugins",
-  "description": "A curated marketplace of Claude Code plugins",
-  "version": "1.0.0",
   "owner": {
-    "name": "JCMRS",
-    "url": "https://github.com/jcmrs"
+    "name": "JCMRS"
   },
   "plugins": [
     {
       "name": "profile-creator",
-      "author": {
-        "name": "JCMRS"
-      },
-      "category": "productivity",
-      "description": "Plugin extending the Axivo Claude Collaboration Platform, providing functionality to create Domain Profiles - rooted in behavioral programming, SRE, Domain Knowledge Graphs Ontology (langroid, crewai, langraph, semantic kernel et alii) - with comprehensive guided templates and validation",
-      "homepage": "https://github.com/jcmrs/jcmrs-plugins/tree/main/plugins/profile-creator",
-      "repository": "https://github.com/jcmrs/jcmrs-plugins",
-      "license": "BSD-3-Clause",
-      "keywords": [
-        "behavioral",
-        "profiles",
-        "domain-profiles",
-        "domain-knowledge",
-        "sre",
-        "ontology",
-        "langroid",
-        "crewai",
-        "langraph",
-        "semantic-kernel",
-        "templates",
-        "methodology",
-        "collaboration",
-        "axivo",
-        "claude"
-      ],
-      "source": "../plugins/profile-creator",
-      "strict": false
+      "source": "./plugins/profile-creator",
+      "description": "Transforms messy human intent and repository analysis into living operational domain profiles through 6-phase knowledge engineering pipeline"
     }
   ]
 }

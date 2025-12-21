@@ -8,6 +8,11 @@
       "name": "profile-creator",
       "source": "./plugins/profile-creator",
       "description": "Transforms messy human intent and repository analysis into living operational domain profiles through 6-phase knowledge engineering pipeline"
+    },
+    {
+      "name": "running-log",
+      "source": "./plugins/running-log",
+      "description": "Persistent schema-driven running log capturing ideas, consultations, and Claude's reasoning patterns for cross-session learning and process memory"
     }
   ]
 }

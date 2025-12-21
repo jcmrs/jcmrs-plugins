@@ -1,0 +1,5 @@
+{
+  "name": "running-log",
+  "version": "1.0.0",
+  "description": "Persistent schema-driven running log capturing ideas, consultations, and Claude's reasoning patterns for cross-session learning and process memory"
+}

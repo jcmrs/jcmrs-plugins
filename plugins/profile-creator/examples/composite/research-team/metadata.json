@@ -1,0 +1,89 @@
+{
+  "profile_type": "composite",
+  "team_name": "CrewAI Research Team",
+  "architecture": "HMAS (Hierarchical Multi-Agent System)",
+  "version": "1.0.0",
+  "created": "2024-12-21",
+  "framework_compatibility": "Axivo Claude Collaboration Platform",
+  "generation_method": "Manual (Reference Implementation)",
+  "team_structure": {
+    "system_owner": {
+      "file": "CLAUDE.md",
+      "role": "Orchestrator and first line of defense",
+      "responsibilities": "Triage, routing, synthesis"
+    },
+    "specialists": [
+      {
+        "file": "Domain_Linguist.md",
+        "archetype": "Domain Linguist",
+        "domain": "Multi-Agent Systems Terminology",
+        "expertise": "Semantic precision, ontology, cross-framework mapping"
+      }
+    ],
+    "note": "Researcher specialist not included in this example (see singular/researcher-crewai for complete Researcher profile)"
+  },
+  "profile_characteristics": {
+    "system_owner": {
+      "total_lines": 280,
+      "observation_count": 20,
+      "observation_categories": 5
+    },
+    "domain_linguist": {
+      "total_lines": 320,
+      "observation_count": 35,
+      "observation_categories": 6
+    }
+  },
+  "living_profile_indicators": {
+    "system_owner": {
+      "activation_triggers": true,
+      "self_monitoring": true,
+      "rejection_protocols": true,
+      "transformation_logic": true,
+      "orchestration_mechanisms": true
+    },
+    "domain_linguist": {
+      "activation_triggers": true,
+      "self_monitoring": true,
+      "rejection_protocols": true,
+      "transformation_logic": true,
+      "reports_to_system_owner": true
+    }
+  },
+  "key_design_decisions": [
+    "System Owner always active (first line of defense)",
+    "Specialists activated via delegation (not self-initiated)",
+    "Clear boundaries between specialists (Researcher=validation, Domain Linguist=terminology)",
+    "Explicit attribution in synthesis (Researcher confirms, Domain Linguist clarifies)",
+    "Routing logic based on request substance not surface keywords",
+    "Multi-specialist coordination when questions span domains",
+    "Specialist autonomy within delegated scope (System Owner doesn't micromanage)"
+  ],
+  "use_cases": [
+    "Complex CrewAI questions requiring both validation and terminology clarity",
+    "Cross-framework terminology confusion needing disambiguation",
+    "Multi-faceted research questions benefiting from specialist collaboration",
+    "Situations where single expert insufficient for comprehensive answer"
+  ],
+  "advantages_over_singular": [
+    "Deeper expertise in narrow domains vs broad shallow coverage",
+    "Clearer separation of concerns (validation vs terminology)",
+    "Specialists can work in parallel when independent",
+    "System Owner provides consistent orchestration logic",
+    "Easier to add new specialists without modifying existing profiles"
+  ],
+  "when_to_use_composite_vs_singular": {
+    "use_composite_when": [
+      "Domain is large enough to benefit from specialization",
+      "Distinct sub-domains with minimal overlap",
+      "Team collaboration adds value beyond single expert",
+      "Coordination overhead justified by depth gains"
+    ],
+    "use_singular_when": [
+      "Domain is cohesive and not easily divisible",
+      "Overhead of coordination exceeds depth benefits",
+      "Single expert can cover breadth and depth adequately",
+      "Simpler deployment and maintenance is priority"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "jcmrs-plugins",
+  "description": "JCMRS Marketplace for Claude Code Plugins",
+  "version": "1.0.0",
+  "owner": {
+    "name": "JCMRS",
+    "url": "https://github.com/jcmrs"
+  },
+  "plugins": [
+    {
+      "name": "profile-creator",
+      "author": {
+        "name": "JCMRS"
+      },
+      "category": "productivity",
+      "description": "Create high-quality behavioral programming profiles for the Axivo Claude Collaboration Platform with guided templates and comprehensive validation",
+      "homepage": "https://github.com/jcmrs/jcmrs-plugins/tree/main/plugins/profile-creator",
+      "repository": "https://github.com/jcmrs/jcmrs-plugins",
+      "license": "BSD-3-Clause",
+      "keywords": [
+        "behavioral",
+        "profiles",
+        "templates",
+        "methodology",
+        "collaboration",
+        "axivo",
+        "claude"
+      ],
+      "source": "../plugins/profile-creator",
+      "strict": false
+    }
+  ]
+}

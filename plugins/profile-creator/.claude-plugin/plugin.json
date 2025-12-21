@@ -1,0 +1,21 @@
+{
+  "name": "profile-creator",
+  "version": "0.1.0",
+  "description": "Knowledge engineering pipeline for generating operational domain profiles with behavioral programming",
+  "skills": [
+    {
+      "name": "profile-creator",
+      "description": "Transforms messy human intent and repository analysis into living operational domain profiles through 6-phase knowledge engineering pipeline"
+    }
+  ],
+  "commands": [
+    {
+      "name": "create-profile",
+      "description": "Create operational domain profile through conversational pipeline"
+    },
+    {
+      "name": "validate-profile",
+      "description": "Validate existing profile against quality checklist"
+    }
+  ]
+}

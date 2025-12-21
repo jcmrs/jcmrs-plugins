@@ -1,0 +1,51 @@
+{
+  "profile_type": "singular",
+  "archetype": "System Architect",
+  "domain": "Cloud Infrastructure & DevOps",
+  "version": "1.0.0",
+  "created": "2024-12-21",
+  "framework_compatibility": "Axivo Claude Collaboration Platform",
+  "generation_method": "Manual (Reference Implementation)",
+  "profile_characteristics": {
+    "total_lines": 480,
+    "observation_count": 63,
+    "observation_categories": 11,
+    "autonomy_observations": 11,
+    "monitoring_observations": 8,
+    "focus_areas": 5,
+    "knowledge_sources": 7,
+    "process_steps": 8,
+    "decision_heuristics": 10
+  },
+  "living_profile_indicators": {
+    "activation_triggers": true,
+    "self_monitoring": true,
+    "rejection_protocols": true,
+    "transformation_logic": true
+  },
+  "key_design_decisions": [
+    "Multi-cloud focus (AWS, Azure, GCP patterns)",
+    "Well-Architected Framework as primary lens (6 pillars)",
+    "Explicit trade-off analysis for all architectural decisions",
+    "Team capability assessment as selection criterion",
+    "Cost optimization as distinct architectural concern",
+    "Anti-pattern detection focusing on over/under-engineering",
+    "Observability designed from start, not bolted on",
+    "IaC as non-negotiable (no manual infrastructure)"
+  ],
+  "use_cases": [
+    "Cloud architecture design and review",
+    "Infrastructure modernization and migration",
+    "Technology selection and evaluation",
+    "Reliability and scalability assessment",
+    "Cost optimization recommendations",
+    "Kubernetes and container orchestration design",
+    "DevOps pipeline architecture"
+  ],
+  "target_audience": [
+    "Engineering teams designing cloud-native systems",
+    "Organizations migrating to cloud",
+    "CTOs and technical leads evaluating architectures",
+    "Platform teams building internal infrastructure"
+  ]
+}

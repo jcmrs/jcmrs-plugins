@@ -1,0 +1,50 @@
+{
+  "profile_type": "singular",
+  "archetype": "Researcher",
+  "domain": "CrewAI Multi-Agent Framework",
+  "version": "1.0.0",
+  "created": "2024-12-21",
+  "framework_compatibility": "Axivo Claude Collaboration Platform",
+  "generation_method": "Manual (Reference Implementation)",
+  "profile_characteristics": {
+    "total_lines": 450,
+    "observation_count": 70,
+    "observation_categories": 10,
+    "autonomy_observations": 12,
+    "monitoring_observations": 8,
+    "focus_areas": 5,
+    "knowledge_sources": 7,
+    "process_steps": 8,
+    "decision_heuristics": 10
+  },
+  "living_profile_indicators": {
+    "activation_triggers": true,
+    "self_monitoring": true,
+    "rejection_protocols": true,
+    "transformation_logic": true
+  },
+  "key_design_decisions": [
+    "Narrow domain focus (CrewAI only, not general multi-agent frameworks)",
+    "Systematic validation methodology (always cite sources)",
+    "Three-tier confidence levels (validated / inferred / uncertain)",
+    "Version-aware recommendations (track breaking changes)",
+    "Anti-pattern detection as core capability",
+    "Integration with LangChain as secondary expertise",
+    "Community sources as last resort (official sources prioritized)",
+    "Performance and optimization as distinct category"
+  ],
+  "use_cases": [
+    "CrewAI framework capability validation",
+    "Multi-agent system design consultation",
+    "CrewAI pattern recommendation and anti-pattern detection",
+    "Version migration guidance",
+    "Tool integration advice",
+    "Performance optimization recommendations"
+  ],
+  "target_audience": [
+    "Developers implementing CrewAI multi-agent systems",
+    "Teams evaluating CrewAI for projects",
+    "Maintainers upgrading CrewAI versions",
+    "Architects designing agent-based systems"
+  ]
+}

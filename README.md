@@ -6,7 +6,7 @@ A curated marketplace of Claude Code plugins.
 
 ### Profile Creator
 
-Create high-quality behavioral programming profiles for the Axivo Claude Collaboration Platform with comprehensive guided templates and validation.
+Plugin extending the Axivo Claude Collaboration Platform, providing functionality to create Domain Profiles - rooted in behavioral programming, SRE, Domain Knowledge Graphs Ontology (langroid, crewai, langraph, semantic kernel et alii) - and comprehensive guided templates and validation.
 
 **Features:**
 - 6-phase guided creation methodology

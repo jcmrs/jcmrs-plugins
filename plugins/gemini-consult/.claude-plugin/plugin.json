@@ -1,0 +1,5 @@
+{
+  "name": "gemini-consult",
+  "version": "1.0.0",
+  "description": "Leverage Google Gemini's CLI for analyzing large codebases beyond typical context limits using @ syntax for file/directory inclusion"
+}

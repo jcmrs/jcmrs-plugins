@@ -13,6 +13,11 @@
       "name": "running-log",
       "source": "./plugins/running-log",
       "description": "Persistent schema-driven running log capturing ideas, consultations, and Claude's reasoning patterns for cross-session learning and process memory"
+    },
+    {
+      "name": "gemini-consult",
+      "source": "./plugins/gemini-consult",
+      "description": "Leverage Google Gemini's CLI for analyzing large codebases beyond typical context limits using @ syntax for file/directory inclusion"
     }
   ]
 }

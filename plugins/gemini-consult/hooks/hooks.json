@@ -1,0 +1,17 @@
+{
+  "description": "Auto-suggest Gemini CLI when Claude attempts to read large file scopes that would benefit from Gemini's expanded context window",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are monitoring file read operations to help users leverage Gemini CLI for large-scale analysis.\n\n**Analysis Task:**\nEvaluate if this file operation would benefit from using Gemini CLI instead of Claude Code's Read/Glob tools.\n\n**Tool Input:**\n$TOOL_INPUT\n\n**Decision Criteria:**\n\n1. **Count file operations in current context:**\n   - If this is part of a pattern of reading many files (>10 files)\n   - Look at transcript to see recent Read/Glob operations\n\n2. **Estimate total scope:**\n   - Single large file (>100KB): Consider Gemini\n   - Multiple files being read sequentially: Count them\n   - Glob pattern matching many files: Estimate based on pattern\n\n3. **Type of analysis:**\n   - Architecture review: Suggest Gemini\n   - Cross-file pattern detection: Suggest Gemini\n   - Security audit: Suggest Gemini\n   - Single file deep dive: Allow Read\n   - Documentation package (3-7 md files): Allow Read (avoid reductionism)\n\n**Threshold for Suggestion:**\n- >10 files OR >100KB total\n- Reason: Documentation packages of 3-7 markdown files are better read directly for understanding\n\n**Output Format:**\n\nIf threshold NOT exceeded or documentation package:\n```json\n{\n  \"hookSpecificOutput\": {\n    \"permissionDecision\": \"allow\"\n  },\n  \"continue\": true\n}\n```\n\nIf threshold exceeded, suggest Gemini:\n```json\n{\n  \"hookSpecificOutput\": {\n    \"permissionDecision\": \"allow\"\n  },\n  \"systemMessage\": \"📊 **Large Scope Detected**\\n\\nYou're about to read [N files / X KB]. Consider using Gemini CLI for more efficient large-scale analysis:\\n\\n`/jcmrs:gemini-consult @[scope-pattern] [your analysis question]`\\n\\nExamples:\\n- `/jcmrs:gemini-consult @src/ Analyze architecture`\\n- `/jcmrs:gemini-consult @src/ @tests/ Check test coverage`\\n- `/jcmrs:gemini-consult --all_files Overview of project structure`\\n\\n*Proceeding with Read/Glob as requested. Run `/jcmrs:gemini-check` to verify Gemini CLI availability.*\",\n  \"continue\": true\n}\n```\n\n**Important:**\n- Always allow the operation (permissionDecision: \"allow\")\n- Only provide systemMessage if suggesting Gemini\n- Tailor scope-pattern suggestion to the files being accessed\n- Be concise but helpful\n\n**Analyze the current operation and respond:**",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

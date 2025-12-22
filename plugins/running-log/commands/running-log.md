@@ -1,13 +1,20 @@
-# /running-log - Running Log Command
+# /running-log - Running Log Display
 
-You are executing the `/running-log` command to manage persistent process memory entries.
+Display running log entries. For adding ideas, use `/idea`. For post-processing, use `/review-backlog`.
+
+## Usage
+
+```
+/running-log --show [N]    # Show last N entries (default: 10)
+/running-log --debug       # Show last 5 entries with full details
+```
 
 ## Parse Arguments
 
 Check `$ARGUMENTS` for flags:
-- No arguments or empty: **Manual entry mode**
 - `--show` or `--show N`: **Display mode** (show last N entries, default 10)
 - `--debug`: **Debug mode** (show last 5 entries with regex details)
+- No arguments or empty: Display usage help
 
 ## File Paths
 
@@ -48,101 +55,28 @@ Format each entry with full markdown, separated by `---`
 
 ---
 
-## Mode 3: Manual Entry (no arguments)
+## Mode 3: Usage Help (no arguments)
 
-### Step 1: Gather Entry Details
-
-Prompt user for each field:
+Display usage information:
 
 ```
-**Entry Type?** [Idea/Note | Consultation | Process Memory]
-```
+Running Log v2.0 - Display & Quick-Capture
 
-Wait for response. Then:
+Display Modes:
+  /running-log --show [N]    Show last N entries (default: 10)
+  /running-log --debug       Show last 5 entries with full details
 
-```
-**Description** (1-2 sentences):
-```
+Quick-Capture:
+  /idea [DESCRIPTION]        Add idea to backlog (one-line, AI fills defaults)
 
-Wait for response. Then:
+Post-Processing:
+  /review-backlog            Prioritize, link, organize entries
 
-```
-**Confidence/Priority** (% or High/Med/Low):
-```
-
-Wait for response. Then:
-
-```
-**Status** [Assumed/Validated/Rejected/Todo/In Progress/Done/Blocked]:
-```
-
-Wait for response. Then:
-
-```
-**Tags** (comma-separated):
-```
-
-Wait for response. Then (optional):
-
-```
-**Linked To** (entry IDs like #ID-20251221-001, or press Enter to skip):
-```
-
-Wait for response.
-
-### Step 2: Generate Entry ID
-
-1. Check existing entries in RUNNING_LOG.md to find highest entry number for today
-2. Generate ID: `#ID-YYYYMMDD-NNN` where:
-   - YYYY = current year
-   - MM = current month (zero-padded)
-   - DD = current day (zero-padded)
-   - NNN = next sequence number (001, 002, etc.)
-
-Example: `#ID-20251221-006`
-
-### Step 3: Create Entry
-
-Format entry using schema:
-
-```markdown
-## [Entry Type] | [Entry ID] | [ISO 8601 Timestamp]
-
-**Description**: [user input]
-**Confidence/Priority**: [user input]
-**Status**: [user input]
-**Type**: [Entry Type from step 1]
-**Profile**: DEVELOPER
-**Linked To**: [user input if provided]
-**Tags**: [user input]
-
-[If user wants to add extended context, prompt: "Extended context (optional, press Enter to skip):"]
-
----
-```
-
-### Step 4: Append to RUNNING_LOG.md
-
-1. Read `.claude/RUNNING_LOG.md`
-2. Find the `## Entry Backlog` section
-3. Insert new entry at the TOP of the backlog (reverse chronological)
-4. Update `**Last Updated**` timestamp in header
-5. Write file
-
-### Step 5: Update LAST_ENTRIES.md
-
-1. Read `.claude/LAST_ENTRIES.md`
-2. Add new entry to top of table
-3. Keep only last 20 entries
-4. Update `**Last Updated**` timestamp
-5. Increment `**Total Entries**` count
-6. Write file
-
-### Step 6: Confirm
-
-Display:
-```
-✅ Logged entry [Entry ID] to .claude/RUNNING_LOG.md
+Examples:
+  /running-log --show 5              Show last 5 entries
+  /running-log --debug               Show debugging details
+  /idea Local AI-optimized docs      Add quick idea
+  /review-backlog                    Review and organize backlog
 ```
 
 ---

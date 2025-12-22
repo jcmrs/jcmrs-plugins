@@ -1,4 +1,9 @@
-# Profile Creator: Knowledge Engineering Pipeline
+---
+name: Profile Creator
+description: Knowledge engineering pipeline that transforms messy human intent and repository analysis into living operational domain profiles
+version: 0.1.0
+---
+
 
 Transforms messy human intent and repository analysis into living operational domain profiles through collaborative knowledge engineering.
 

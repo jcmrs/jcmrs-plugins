@@ -1,4 +1,9 @@
-# /validate-profile - Validate Operational Domain Profile
+---
+name: validate-profile
+description: Validate operational domain profile quality and completeness using Phase 5 checklist
+argument-hint: "<path-to-profile>"
+---
+
 
 Run Phase 5 validation checklist on an existing profile to verify quality and completeness.
 

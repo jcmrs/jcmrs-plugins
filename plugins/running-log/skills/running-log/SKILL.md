@@ -1,4 +1,9 @@
-# Running Log Skill Specification v2.0
+---
+name: Running Log
+description: Persistent schema-driven running log with three-component architecture - quick-capture ideas, AI auto-detection, and backlog review librarian
+version: 2.0.0
+---
+
 
 **Name**: running-log
 **Version**: 2.0

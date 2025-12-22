@@ -1,4 +1,9 @@
-# /create-profile - Create Operational Domain Profile
+---
+name: create-profile
+description: Create operational domain profile through 6-phase knowledge engineering pipeline
+argument-hint: "[intent] [repository_url]"
+---
+
 
 Create a living operational domain profile through conversational knowledge engineering pipeline.
 

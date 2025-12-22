@@ -1,5 +1,11 @@
 {
   "name": "running-log",
   "version": "2.0.0",
-  "description": "Persistent schema-driven running log with three-component architecture: quick-capture ideas, AI auto-detection, and backlog review librarian"
+  "description": "Persistent schema-driven running log with three-component architecture: quick-capture ideas, AI auto-detection, and backlog review librarian",
+  "author": {
+    "name": "JCMRS"
+  },
+  "license": "BSD-3-Clause",
+  "repository": "https://github.com/jcmrs/jcmrs-plugins",
+  "keywords": ["running-log", "process-memory", "ideas", "consultation", "backlog"]
 }

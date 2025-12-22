@@ -1,5 +1,11 @@
 {
   "name": "profile-creator",
   "version": "0.1.0",
-  "description": "Transforms messy human intent and repository analysis into living operational domain profiles through 6-phase knowledge engineering pipeline"
+  "description": "Transforms messy human intent and repository analysis into living operational domain profiles through 6-phase knowledge engineering pipeline",
+  "author": {
+    "name": "JCMRS"
+  },
+  "license": "BSD-3-Clause",
+  "repository": "https://github.com/jcmrs/jcmrs-plugins",
+  "keywords": ["profile-creator", "behavioral-programming", "knowledge-engineering", "domain-profiles"]
 }

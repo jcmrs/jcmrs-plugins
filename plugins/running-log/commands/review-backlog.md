@@ -1,4 +1,9 @@
-# /review-backlog - Backlog Librarian & Post-Processor
+---
+name: review-backlog
+description: Post-process running log entries - prioritize, link, harmonize tags, regenerate auto-sections
+argument-hint: "[--ideas|--risks|--link ID|--tags]"
+---
+
 
 Post-process running log entries: prioritize, link, harmonize tags, regenerate auto-sections.
 

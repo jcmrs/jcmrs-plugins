@@ -1,4 +1,9 @@
-# /idea - Quick Idea Capture
+---
+name: idea
+description: Quick idea capture with AI-filled defaults (description only, zero friction)
+argument-hint: "[DESCRIPTION]"
+---
+
 
 Ultra-minimal idea capture while working. AI fills all defaults.
 

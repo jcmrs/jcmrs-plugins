@@ -1,4 +1,9 @@
-# /running-log - Running Log Display
+---
+name: running-log
+description: Display running log entries - show recent entries or debug details
+argument-hint: "[--show N|--debug]"
+---
+
 
 Display running log entries. For adding ideas, use `/idea`. For post-processing, use `/review-backlog`.
 

@@ -1,0 +1,867 @@
+{
+  "autogen": {
+    "Agent": {
+      "type": "abstract_base",
+      "children": ["ConversableAgent", "AssistantAgent", "UserProxyAgent"],
+      "relationships": {
+        "IS_A": "abstract concept",
+        "HAS_A": ["name", "llm_config", "system_message"],
+        "CAN_DO": ["send", "receive", "generate_reply"]
+      }
+    },
+    "ConversableAgent": {
+      "type": "concrete_class",
+      "parent": "Agent",
+      "children": ["AssistantAgent", "UserProxyAgent"],
+      "purpose": "Basic conversational agent",
+      "relationships": {
+        "IS_A": "Agent",
+        "HAS_A": ["name", "system_message", "llm_config", "human_input_mode"],
+        "CAN_DO": ["send", "receive", "generate_reply", "register_reply", "initiate_chat"],
+        "USED_IN": ["one-to-one conversation", "GroupChat participant"]
+      },
+      "cross_domain_equivalent": {
+        "langroid": "ChatAgent",
+        "general": "AI conversational agent"
+      }
+    },
+    "AssistantAgent": {
+      "type": "concrete_class",
+      "parent": "ConversableAgent",
+      "purpose": "Agent with tool/function calling",
+      "relationships": {
+        "IS_A": "ConversableAgent",
+        "EXTENDS": "ConversableAgent with tool capabilities",
+        "HAS_A": ["function_map", "registered_functions"],
+        "CAN_DO": ["all ConversableAgent methods", "register_for_llm", "call_functions"],
+        "USED_IN": ["function calling workflows", "tool-augmented agents"],
+        "INTEGRATES_WITH": ["MCP tools", "UTCP tools"]
+      },
+      "cross_domain_equivalent": {
+        "langroid": "ToolAgent",
+        "mcp": "MCP client using tools",
+        "utcp": "UTCP-enabled agent",
+        "general": "Function-calling AI agent"
+      }
+    },
+    "UserProxyAgent": {
+      "type": "concrete_class",
+      "parent": "ConversableAgent",
+      "purpose": "Human-in-the-loop agent, code execution proxy",
+      "relationships": {
+        "IS_A": "ConversableAgent",
+        "REPRESENTS": "human user",
+        "HAS_A": ["human_input_mode", "code_execution_config"],
+        "CAN_DO": ["execute_code", "request_human_input", "register_for_execution"],
+        "USED_IN": ["human approval workflows", "code execution", "function execution"]
+      },
+      "cross_domain_equivalent": {
+        "langroid": "interactive Task",
+        "general": "Human proxy / approval agent"
+      }
+    },
+    "GroupChat": {
+      "type": "orchestration_object",
+      "purpose": "Multi-agent conversation container",
+      "relationships": {
+        "CONTAINS": ["agents list", "messages", "max_round", "speaker_selection_method"],
+        "MANAGED_BY": "GroupChatManager",
+        "ENABLES": "multi-party conversation",
+        "PARTICIPANTS_ARE": "ConversableAgent instances"
+      },
+      "cross_domain_equivalent": {
+        "langroid": "Task hierarchy with subtasks",
+        "general": "Multi-agent system"
+      }
+    },
+    "GroupChatManager": {
+      "type": "concrete_class",
+      "parent": "ConversableAgent",
+      "purpose": "Orchestrate GroupChat conversations",
+      "relationships": {
+        "IS_A": "ConversableAgent",
+        "MANAGES": "GroupChat",
+        "DOES": ["select_speaker", "broadcast_messages", "enforce_rules", "detect_termination"],
+        "WORKS_WITH": "GroupChat"
+      }
+    }
+  },
+  "langroid": {
+    "Agent": {
+      "type": "base_class",
+      "children": ["ChatAgent", "ToolAgent"],
+      "relationships": {
+        "HAS_A": ["config", "llm", "vecdb"],
+        "CAN_DO": ["handle_message", "llm_response", "agent_response"]
+      }
+    },
+    "ChatAgent": {
+      "type": "concrete_class",
+      "parent": "Agent",
+      "purpose": "Basic conversational agent",
+      "relationships": {
+        "IS_A": "Agent",
+        "HAS_A": ["ChatAgentConfig", "llm", "vecdb (optional)"],
+        "CAN_DO": ["llm_response", "agent_response", "handle_message"],
+        "CONFIGURED_BY": "ChatAgentConfig",
+        "USED_IN": ["Task orchestration", "simple chat", "base for specialized agents"]
+      },
+      "cross_domain_equivalent": {
+        "autogen": "ConversableAgent",
+        "general": "AI conversational agent"
+      }
+    },
+    "ToolAgent": {
+      "type": "pattern",
+      "purpose": "Agent with tool/function calling",
+      "relationships": {
+        "BASED_ON": "ChatAgent or custom Agent",
+        "USES": "ToolMessage",
+        "CAN_DO": ["call_tools", "execute_functions"],
+        "PATTERN": "ToolMessage subclass + agent handles tools",
+        "INTEGRATES_WITH": ["MCP tools", "UTCP tools"]
+      },
+      "cross_domain_equivalent": {
+        "autogen": "AssistantAgent",
+        "mcp": "MCP client using tools",
+        "utcp": "UTCP-enabled agent",
+        "general": "Function-calling AI agent"
+      }
+    },
+    "Task": {
+      "type": "orchestration_object",
+      "purpose": "Coordinate agent activities",
+      "relationships": {
+        "HAS_A": ["agent", "name", "interactive", "subtasks"],
+        "CAN_DO": ["run", "step", "add_subtask"],
+        "ENABLES": ["workflow management", "task delegation", "sequential processing"],
+        "CONTAINS": "Agent instance"
+      },
+      "cross_domain_equivalent": {
+        "autogen": "initiate_chat() / conversation loop",
+        "general": "Workflow orchestration"
+      }
+    },
+    "ToolMessage": {
+      "type": "message_class",
+      "purpose": "Tool/function call message",
+      "relationships": {
+        "IS_A": "Message",
+        "HAS_A": ["request", "purpose", "parameters"],
+        "IMPLEMENTS": "handle() method",
+        "USED_BY": "ToolAgent pattern"
+      },
+      "cross_domain_equivalent": {
+        "autogen": "function calling (register_for_llm + register_for_execution)",
+        "mcp": "MCP tool invocation",
+        "utcp": "UTCP tool call",
+        "general": "Function call interface"
+      }
+    }
+  },
+  "mcp": {
+    "Server": {
+      "type": "abstract_concept",
+      "children": ["SSE_Server", "stdio_Server", "HTTP_Server", "WebSocket_Server"],
+      "relationships": {
+        "IS_A": "MCP server instance",
+        "HAS_A": ["transport type", "tools", "resources", "prompts", "sampling capability"],
+        "PROVIDES": ["tools to clients", "resources to clients", "prompts to clients"],
+        "COMMUNICATES_WITH": "MCP client"
+      }
+    },
+    "Tool": {
+      "type": "mcp_component",
+      "purpose": "Executable function exposed by MCP server",
+      "relationships": {
+        "IS_A": "MCP component",
+        "HAS_A": ["name", "description", "input_schema", "output_schema"],
+        "PROVIDED_BY": "MCP server",
+        "INVOKED_BY": "MCP client",
+        "SIMILAR_TO": {
+          "autogen": "register_for_llm() function",
+          "langroid": "ToolMessage",
+          "utcp": "UTCP tool",
+          "fastapi": "API endpoint"
+        }
+      },
+      "cross_domain_equivalent": {
+        "autogen": "registered function",
+        "langroid": "ToolMessage",
+        "utcp": "Universal tool",
+        "general": "Function/API endpoint"
+      }
+    },
+    "Resource": {
+      "type": "mcp_component",
+      "purpose": "Data source exposed by MCP server",
+      "relationships": {
+        "IS_A": "MCP component",
+        "HAS_A": ["uri", "name", "mime_type", "description"],
+        "PROVIDED_BY": "MCP server",
+        "READ_BY": "MCP client",
+        "SIMILAR_TO": {
+          "fastapi": "GET endpoint",
+          "general": "data source / file / API"
+        }
+      },
+      "cross_domain_equivalent": {
+        "fastapi": "API endpoint returning data",
+        "general": "Data source"
+      }
+    },
+    "Prompt": {
+      "type": "mcp_component",
+      "purpose": "Pre-defined prompt template",
+      "relationships": {
+        "IS_A": "MCP component",
+        "HAS_A": ["name", "description", "arguments", "template"],
+        "PROVIDED_BY": "MCP server",
+        "USED_BY": "MCP client",
+        "ENABLES": "prompt reuse and consistency"
+      }
+    }
+  },
+  "utcp": {
+    "UniversalTool": {
+      "type": "protocol_abstraction",
+      "purpose": "Framework-agnostic tool definition",
+      "relationships": {
+        "IS_A": "standardized tool interface",
+        "HAS_A": ["name", "description", "parameters", "returns"],
+        "ADAPTS_TO": ["autogen", "langroid", "openai", "mcp"],
+        "ENABLES": "cross-framework tool sharing"
+      },
+      "cross_domain_equivalent": {
+        "autogen": "register_for_llm() function",
+        "langroid": "ToolMessage",
+        "mcp": "MCP tool",
+        "general": "Function interface"
+      }
+    },
+    "ToolCatalog": {
+      "type": "registry",
+      "purpose": "Central registry of available tools",
+      "relationships": {
+        "IS_A": "tool registry",
+        "CONTAINS": "UniversalTool definitions",
+        "PROVIDES": ["list_tools", "get_tool", "register_tool"],
+        "ENABLES": "tool discovery"
+      }
+    },
+    "Adapter": {
+      "type": "integration_pattern",
+      "purpose": "Convert UTCP tool to framework-specific format",
+      "relationships": {
+        "CONVERTS": "UniversalTool → framework tool",
+        "IMPLEMENTATIONS": ["autogen_adapter", "langroid_adapter", "openai_adapter", "mcp_adapter"],
+        "ENABLES": "framework interoperability"
+      }
+    }
+  },
+  "fastapi": {
+    "Application": {
+      "type": "api_server",
+      "purpose": "FastAPI application instance",
+      "relationships": {
+        "IS_A": "ASGI application",
+        "HAS_A": ["routes", "dependencies", "middleware"],
+        "PROVIDES": "HTTP API endpoints",
+        "SIMILAR_TO": {
+          "mcp": "MCP HTTP server",
+          "general": "REST API server"
+        }
+      },
+      "cross_domain_equivalent": {
+        "mcp": "MCP server (HTTP/SSE transport)",
+        "general": "API server"
+      }
+    },
+    "PathOperation": {
+      "type": "endpoint",
+      "purpose": "API endpoint with HTTP method",
+      "relationships": {
+        "IS_A": "API endpoint",
+        "HAS_A": ["path", "method", "handler function", "dependencies"],
+        "RECEIVES": "HTTP request",
+        "RETURNS": "HTTP response",
+        "VALIDATED_BY": "Pydantic models"
+      },
+      "cross_domain_equivalent": {
+        "mcp": "MCP resource (for GET) or tool (for POST)",
+        "general": "API endpoint"
+      }
+    },
+    "Dependency": {
+      "type": "dependency_injection",
+      "purpose": "Shared logic injected into path operations",
+      "relationships": {
+        "INJECTED_BY": "Depends()",
+        "CAN_BE": ["function", "class", "generator"],
+        "PROVIDES": ["database session", "authentication", "configuration"],
+        "USED_IN": "path operations"
+      }
+    },
+    "PydanticModel": {
+      "type": "validation_schema",
+      "purpose": "Request/response data validation",
+      "relationships": {
+        "IS_A": "BaseModel subclass",
+        "VALIDATES": ["request body", "response data", "query parameters"],
+        "PROVIDES": ["type checking", "serialization", "custom validation"],
+        "SIMILAR_TO": {
+          "mcp": "tool input/output schema",
+          "utcp": "parameter validation",
+          "general": "JSON Schema"
+        }
+      }
+    }
+  },
+  "git_gitflow": {
+    "Repository": {
+      "type": "version_control",
+      "purpose": "Git repository containing code history",
+      "relationships": {
+        "CONTAINS": ["commits", "branches", "tags"],
+        "HAS_A": ["working directory", "staging area", ".git database"],
+        "ENABLES": ["version control", "collaboration"]
+      }
+    },
+    "Branch": {
+      "type": "version_line",
+      "purpose": "Parallel line of development",
+      "relationships": {
+        "IS_A": "pointer to commit",
+        "TYPES": ["main", "develop", "feature", "release", "hotfix"],
+        "CAN_BE": ["merged", "rebased", "deleted"],
+        "ENABLES": "isolated development"
+      }
+    },
+    "Commit": {
+      "type": "snapshot",
+      "purpose": "Snapshot of code at a point in time",
+      "relationships": {
+        "IS_A": "immutable snapshot",
+        "HAS_A": ["hash", "author", "timestamp", "message", "parent commits", "tree"],
+        "CREATES": "history",
+        "CAN_BE": ["amended", "cherry-picked", "reverted"]
+      }
+    },
+    "Merge": {
+      "type": "integration_operation",
+      "purpose": "Combine branches",
+      "relationships": {
+        "COMBINES": "two branches",
+        "CREATES": "merge commit (usually)",
+        "TYPES": ["fast-forward", "three-way merge", "squash"],
+        "RESOLVES": "conflicts if any",
+        "USED_IN": ["feature integration", "release", "hotfix"]
+      }
+    },
+    "PullRequest": {
+      "type": "collaboration_workflow",
+      "purpose": "Propose and review changes",
+      "relationships": {
+        "PROPOSES": "branch merge",
+        "ENABLES": ["code review", "discussion", "CI/CD checks"],
+        "RESULTS_IN": "merge to target branch",
+        "INTEGRATES_WITH": {
+          "sre": "CI/CD pipeline validation"
+        }
+      }
+    }
+  },
+  "sre": {
+    "Observability": {
+      "type": "monitoring_concept",
+      "purpose": "Understand system internal state from external outputs",
+      "relationships": {
+        "CONSISTS_OF": ["logs", "metrics", "traces"],
+        "ENABLES": ["debugging", "performance analysis", "incident response"],
+        "MEASURED_BY": ["logging systems", "metrics platforms", "tracing systems"]
+      }
+    },
+    "SLI": {
+      "type": "reliability_metric",
+      "purpose": "Service Level Indicator - quantitative measure",
+      "relationships": {
+        "IS_A": "measured metric",
+        "TYPES": ["availability", "latency", "throughput", "error_rate"],
+        "MEASURED_AS": "percentage or ratio",
+        "USED_TO_DEFINE": "SLO",
+        "SIMILAR_TO": {
+          "fastapi": "response time / error rate metrics"
+        }
+      }
+    },
+    "SLO": {
+      "type": "reliability_target",
+      "purpose": "Service Level Objective - target for SLI",
+      "relationships": {
+        "IS_A": "target value for SLI",
+        "DEFINES": "acceptable service level",
+        "HAS_A": "error budget",
+        "INFORMS": "SLA",
+        "ENABLES": "reliability decision-making"
+      }
+    },
+    "SLA": {
+      "type": "contractual_commitment",
+      "purpose": "Service Level Agreement - customer promise",
+      "relationships": {
+        "IS_A": "legal contract",
+        "BASED_ON": "SLO",
+        "INCLUDES": ["target", "measurement", "consequences"],
+        "STRICTER_THAN": "SLO (internal target higher)"
+      }
+    },
+    "Incident": {
+      "type": "service_disruption",
+      "purpose": "Event causing service degradation",
+      "relationships": {
+        "DETECTED_BY": ["alerts", "user reports", "monitoring"],
+        "MANAGED_THROUGH": ["incident response", "postmortem"],
+        "IMPACTS": "SLO and SLA",
+        "RESULTS_IN": ["fixes", "process improvements", "learnings"]
+      }
+    }
+  },
+  "memory_graphs": {
+    "Graph": {
+      "type": "data_structure",
+      "purpose": "Network of nodes and edges representing relationships",
+      "relationships": {
+        "CONSISTS_OF": ["nodes (entities)", "edges (relationships)", "properties"],
+        "TYPES": ["knowledge graph", "memory graph", "conversation graph"],
+        "ENABLES": ["relationship modeling", "graph traversal", "reasoning"]
+      }
+    },
+    "KnowledgeGraph": {
+      "type": "graph_specialization",
+      "purpose": "Represent entities and factual relationships",
+      "relationships": {
+        "IS_A": "graph structure",
+        "CONTAINS": ["entity nodes", "relationship edges", "properties"],
+        "ENABLES": ["semantic search", "reasoning", "knowledge representation"],
+        "STORED_IN": ["Neo4j", "Neptune", "RDF stores"]
+      }
+    },
+    "MemoryGraph": {
+      "type": "graph_specialization",
+      "purpose": "AI agent's episodic and semantic memory",
+      "relationships": {
+        "IS_A": "graph structure",
+        "CONTAINS": ["memory nodes", "temporal edges", "context links"],
+        "TYPES": ["episodic memories", "semantic facts", "procedural knowledge"],
+        "ENABLES": ["agent memory", "learning", "context retrieval"],
+        "INTEGRATES_WITH": {
+          "autogen": "agent memory system",
+          "langroid": "vecdb integration"
+        }
+      }
+    },
+    "VectorMemory": {
+      "type": "storage_pattern",
+      "purpose": "Store memories as embeddings for semantic search",
+      "relationships": {
+        "IS_A": "memory storage approach",
+        "USES": ["embedding models", "vector databases"],
+        "ENABLES": ["semantic similarity search", "RAG"],
+        "TOOLS": ["Pinecone", "Weaviate", "Chroma", "FAISS"],
+        "INTEGRATES_WITH": {
+          "langroid": "vecdb parameter"
+        }
+      }
+    },
+    "RAG": {
+      "type": "retrieval_pattern",
+      "purpose": "Retrieval-Augmented Generation",
+      "relationships": {
+        "IS_A": "LLM enhancement pattern",
+        "COMPONENTS": ["retriever", "ranker", "generator (LLM)"],
+        "WORKFLOW": "query → retrieve docs → augment prompt → LLM generates",
+        "USES": ["vector memory", "knowledge graphs"],
+        "ENABLES": "knowledge-grounded generation"
+      }
+    }
+  },
+  "conceptual_relationships": {
+    "agent": {
+      "abstract_concept": "AI entity that can perceive and act",
+      "specializations": {
+        "conversational_agent": "Engages in natural language conversation",
+        "task_agent": "Executes specific tasks",
+        "tool_agent": "Uses external tools/functions",
+        "coordinator_agent": "Orchestrates other agents"
+      },
+      "implementations": {
+        "autogen": ["ConversableAgent", "AssistantAgent", "UserProxyAgent", "GroupChatManager"],
+        "langroid": ["ChatAgent", "ToolAgent", "custom Agent subclasses"]
+      },
+      "memory_systems": {
+        "memory_graphs": ["episodic memory", "semantic memory", "conversation graph"],
+        "vector_memory": "embedding-based retrieval"
+      }
+    },
+    "conversation": {
+      "abstract_concept": "Exchange of messages between entities",
+      "patterns": {
+        "one_to_one": "Two entities exchange messages",
+        "one_to_many": "One entity broadcasts to many",
+        "many_to_many": "Multiple entities in group discussion"
+      },
+      "implementations": {
+        "autogen": {
+          "one_to_one": "send() / initiate_chat()",
+          "many_to_many": "GroupChat + GroupChatManager"
+        },
+        "langroid": {
+          "one_to_one": "Task.run() with single agent",
+          "many_to_many": "Task hierarchy with multiple agents"
+        }
+      },
+      "storage": {
+        "memory_graphs": "conversation graph",
+        "vector_memory": "conversation embeddings"
+      }
+    },
+    "tool_use": {
+      "abstract_concept": "Agent calls external functions or APIs",
+      "components": {
+        "tool_definition": "Describe what tool does",
+        "tool_registration": "Make tool available to agent",
+        "tool_execution": "Actually run the tool",
+        "result_handling": "Process tool output"
+      },
+      "implementations": {
+        "autogen": {
+          "definition": "Python function with type hints",
+          "registration": "register_for_llm() decorator",
+          "execution": "register_for_execution() decorator",
+          "workflow": "LLM requests → UserProxy executes"
+        },
+        "langroid": {
+          "definition": "ToolMessage subclass",
+          "registration": "Agent auto-detects ToolMessage",
+          "execution": "ToolMessage.handle() method",
+          "workflow": "Agent generates ToolMessage → handle() executes"
+        },
+        "mcp": {
+          "definition": "MCP tool with schema",
+          "registration": "MCP server exposes tools",
+          "execution": "MCP client invokes, server executes",
+          "workflow": "Client requests → Server executes → returns result"
+        },
+        "utcp": {
+          "definition": "Universal tool schema",
+          "registration": "Adapter registers with framework",
+          "execution": "Framework-agnostic invocation",
+          "workflow": "UTCP call → adapter translates → framework executes"
+        },
+        "fastapi": {
+          "definition": "API endpoint",
+          "registration": "Path operation decorator",
+          "execution": "HTTP request to endpoint",
+          "workflow": "Client POSTs → FastAPI routes → handler executes"
+        }
+      }
+    },
+    "orchestration": {
+      "abstract_concept": "Coordinate multiple agents or tasks",
+      "patterns": {
+        "centralized": "Single coordinator manages all agents",
+        "hierarchical": "Tree of parent-child relationships",
+        "sequential": "Chain of agents processing in order",
+        "parallel": "Multiple agents work simultaneously"
+      },
+      "implementations": {
+        "autogen": {
+          "centralized": "GroupChatManager",
+          "sequential": "Chain of send() calls",
+          "parallel": "Multiple initiate_chat() calls"
+        },
+        "langroid": {
+          "hierarchical": "Task with subtasks",
+          "sequential": "Task delegation chain",
+          "parallel": "Multiple Task.run() calls"
+        },
+        "git": {
+          "sequential": "Feature branches merged in order",
+          "parallel": "Multiple feature branches developed simultaneously"
+        }
+      }
+    },
+    "human_in_loop": {
+      "abstract_concept": "Human approval or input in automated workflow",
+      "purposes": {
+        "approval": "Human approves before action",
+        "fallback": "Human intervenes when agent stuck",
+        "verification": "Human verifies agent output",
+        "guidance": "Human provides direction"
+      },
+      "implementations": {
+        "autogen": "UserProxyAgent with human_input_mode='ALWAYS' or 'TERMINATE'",
+        "langroid": "Task with interactive=True",
+        "git": "Pull request review and approval",
+        "general": "Approval workflow, human-AI collaboration"
+      }
+    },
+    "data_validation": {
+      "abstract_concept": "Ensure data meets expected format and constraints",
+      "purposes": {
+        "type_safety": "Verify data types are correct",
+        "constraint_enforcement": "Ensure values within valid ranges",
+        "schema_compliance": "Match expected structure",
+        "business_rules": "Enforce domain-specific rules"
+      },
+      "implementations": {
+        "fastapi": "Pydantic models with validators",
+        "mcp": "JSON Schema for tool parameters",
+        "utcp": "Parameter validation before execution",
+        "general": "JSON Schema, type systems"
+      }
+    },
+    "observability": {
+      "abstract_concept": "Understand system state from outputs",
+      "pillars": {
+        "logs": "Discrete event records",
+        "metrics": "Quantitative measurements over time",
+        "traces": "Request paths through distributed system"
+      },
+      "implementations": {
+        "sre": ["logs", "metrics", "traces"],
+        "fastapi": "Request logging, response time metrics",
+        "general": "Logging frameworks, monitoring systems"
+      },
+      "enables": {
+        "debugging": "Find and fix issues",
+        "performance_optimization": "Identify bottlenecks",
+        "incident_response": "Understand and resolve outages"
+      }
+    },
+    "knowledge_retrieval": {
+      "abstract_concept": "Find and retrieve relevant information",
+      "patterns": {
+        "keyword_search": "Match exact terms",
+        "semantic_search": "Match by meaning (embeddings)",
+        "graph_traversal": "Follow relationships",
+        "hybrid": "Combine multiple approaches"
+      },
+      "implementations": {
+        "memory_graphs": {
+          "semantic_search": "Vector similarity on embeddings",
+          "graph_traversal": "BFS/DFS on knowledge graph",
+          "RAG": "Retrieve docs to augment LLM"
+        },
+        "mcp": "Resource retrieval by URI",
+        "fastapi": "API endpoint queries"
+      },
+      "integrations": {
+        "autogen": "Retrieve context for agents",
+        "langroid": "vecdb integration for RAG"
+      }
+    },
+    "version_control": {
+      "abstract_concept": "Track and manage code changes over time",
+      "operations": {
+        "commit": "Save snapshot of changes",
+        "branch": "Create parallel development line",
+        "merge": "Combine branches",
+        "rebase": "Reapply commits on new base"
+      },
+      "workflows": {
+        "gitflow": "Structured branching strategy (feature, release, hotfix)",
+        "github_flow": "Simple feature branches + pull requests",
+        "trunk_based": "Frequent small commits to main"
+      },
+      "collaboration": {
+        "pull_request": "Propose and review changes",
+        "code_review": "Quality assurance before merge",
+        "conflict_resolution": "Resolve competing changes"
+      },
+      "integrations": {
+        "sre": "CI/CD pipelines triggered by commits",
+        "fastapi": "Deploy on merge to main"
+      }
+    },
+    "api_design": {
+      "abstract_concept": "Define how clients interact with server",
+      "patterns": {
+        "REST": "Resource-based HTTP endpoints",
+        "GraphQL": "Query language for flexible data fetching",
+        "RPC": "Remote procedure calls",
+        "MCP": "Model Context Protocol for LLM tools/resources"
+      },
+      "components": {
+        "endpoints": "Entry points for operations",
+        "schemas": "Data structure definitions",
+        "authentication": "Verify client identity",
+        "validation": "Ensure request correctness"
+      },
+      "implementations": {
+        "fastapi": "REST/GraphQL API server",
+        "mcp": "Tools, resources, prompts over HTTP/SSE/stdio/WebSocket",
+        "general": "OpenAPI specification, API gateways"
+      }
+    }
+  },
+  "ambiguity_resolution_graph": {
+    "agent": {
+      "disambiguation_questions": [
+        "Which framework are you using? (Autogen, Langroid, other)",
+        "What should the agent do? (chat, use tools, represent human)",
+        "Does it need function calling capabilities?",
+        "Does it need memory/knowledge retrieval?"
+      ],
+      "decision_tree": {
+        "framework": {
+          "autogen": {
+            "basic_chat": "ConversableAgent",
+            "with_tools": "AssistantAgent",
+            "human_proxy": "UserProxyAgent",
+            "orchestrator": "GroupChatManager"
+          },
+          "langroid": {
+            "basic_chat": "ChatAgent",
+            "with_tools": "ToolAgent pattern",
+            "custom_behavior": "Agent subclass"
+          }
+        },
+        "memory": {
+          "episodic": "Memory graph with temporal edges",
+          "semantic": "Knowledge graph or vector memory",
+          "rag": "Vector memory + RAG pattern"
+        }
+      }
+    },
+    "conversation": {
+      "disambiguation_questions": [
+        "One-to-one or group conversation?",
+        "How many participants?",
+        "Who decides who speaks next?",
+        "Should conversation be stored for retrieval?"
+      ],
+      "decision_tree": {
+        "participants": {
+          "two": {
+            "autogen": "send() or initiate_chat()",
+            "langroid": "Task.run()"
+          },
+          "many": {
+            "autogen": "GroupChat + GroupChatManager",
+            "langroid": "Parent Task with subtasks"
+          }
+        },
+        "storage": {
+          "store_conversation": "Conversation graph in memory system",
+          "retrieve_context": "RAG over conversation history"
+        }
+      }
+    },
+    "tool_use": {
+      "disambiguation_questions": [
+        "Which framework?",
+        "What tools/functions should agent access?",
+        "Who executes the tools (LLM requests or agent executes)?",
+        "Should tools be framework-agnostic?"
+      ],
+      "decision_tree": {
+        "framework": {
+          "autogen": "register_for_llm() + register_for_execution()",
+          "langroid": "ToolMessage subclass with handle() method",
+          "mcp": "MCP server with tool definitions",
+          "utcp": "Universal tool schema + adapters",
+          "fastapi": "API endpoint as tool"
+        },
+        "portability": {
+          "single_framework": "Use framework-native tool pattern",
+          "multiple_frameworks": "UTCP with adapters",
+          "external_tools": "MCP server"
+        }
+      }
+    },
+    "api": {
+      "disambiguation_questions": [
+        "REST API, GraphQL, or MCP?",
+        "What operations does it provide?",
+        "What validation is needed?",
+        "Is it for humans or AI agents?"
+      ],
+      "decision_tree": {
+        "purpose": {
+          "human_clients": "FastAPI REST/GraphQL",
+          "ai_agents": "MCP server with tools/resources",
+          "both": "FastAPI + MCP server integration"
+        },
+        "validation": {
+          "request_validation": "Pydantic models",
+          "response_validation": "response_model parameter",
+          "tool_validation": "JSON Schema (MCP) or UTCP validation"
+        }
+      }
+    },
+    "merge": {
+      "disambiguation_questions": [
+        "Git merge, PR merge, or data merge?",
+        "What branching strategy? (Gitflow, GitHub flow, trunk-based)",
+        "What merge strategy? (merge commit, squash, rebase)"
+      ],
+      "decision_tree": {
+        "operation": {
+          "git_merge": "git merge <branch>",
+          "pr_merge": "GitHub PR with merge strategy",
+          "data_merge": "Combine datasets or objects"
+        },
+        "strategy": {
+          "preserve_history": "Merge commit (git merge --no-ff)",
+          "clean_history": "Squash and merge or rebase",
+          "fast_forward": "git merge (fast-forward if possible)"
+        }
+      }
+    },
+    "memory": {
+      "disambiguation_questions": [
+        "AI agent memory or system memory?",
+        "What type of memory? (episodic, semantic, vector)",
+        "How should it be retrieved?",
+        "What's the data structure? (graph, vector, key-value)"
+      ],
+      "decision_tree": {
+        "purpose": {
+          "agent_memory": {
+            "episodic": "Memory graph with temporal context",
+            "semantic": "Knowledge graph or vector database",
+            "hybrid": "Graph + vector embeddings"
+          },
+          "system_memory": "RAM allocation, heap/stack"
+        },
+        "retrieval": {
+          "semantic_search": "Vector similarity",
+          "graph_traversal": "Relationship-based queries",
+          "rag": "Retrieve + augment LLM prompt"
+        }
+      }
+    },
+    "observability": {
+      "disambiguation_questions": [
+        "Which pillar? (logs, metrics, traces)",
+        "What are you trying to observe?",
+        "For debugging or monitoring?",
+        "What tools are available?"
+      ],
+      "decision_tree": {
+        "pillar": {
+          "logs": "Discrete events, debugging",
+          "metrics": "Quantitative measurements, performance",
+          "traces": "Distributed request flow"
+        },
+        "purpose": {
+          "debugging": "Logs + traces",
+          "performance": "Metrics + traces",
+          "alerting": "Metrics (SLI/SLO)",
+          "comprehensive": "All three (full observability)"
+        }
+      }
+    }
+  }
+}

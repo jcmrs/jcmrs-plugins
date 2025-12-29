@@ -18,6 +18,11 @@
       "name": "gemini-consult",
       "source": "./plugins/gemini-consult",
       "description": "Leverage Google Gemini's CLI for analyzing large codebases beyond typical context limits using @ syntax for file/directory inclusion"
+    },
+    {
+      "name": "semantic-linguist",
+      "source": "./plugins/semantic-linguist",
+      "description": "Semantic translation between natural language and technical precision across 8 domains: Autogen, Langroid, MCP, UTCP, FastAPI, Git/Gitflow, SRE, and Memory Graphs"
     }
   ]
 }

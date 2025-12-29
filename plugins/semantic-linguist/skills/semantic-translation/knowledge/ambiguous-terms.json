@@ -1,0 +1,415 @@
+{
+  "make it talk": {
+    "ambiguity_score": 0.9,
+    "category": "vague_action_verb",
+    "contexts": ["conversation", "messaging", "speech", "output"],
+    "user_triggers": ["make it talk", "let it talk", "enable talking", "make them talk"],
+    "domains": {
+      "autogen": ["ConversableAgent.send()", "initiate_chat()", "GroupChat"],
+      "langroid": ["llm_response()", "agent_response()", "Task.run()"],
+      "general": ["print()", "speech synthesis", "chat UI"]
+    }
+  },
+  "we need an api": {
+    "ambiguity_score": 0.85,
+    "category": "unclear_scope",
+    "contexts": ["server", "client", "design", "interface"],
+    "user_triggers": ["need an api", "create an api", "build an api", "add api"],
+    "domains": {
+      "backend": ["HTTP REST server", "GraphQL server", "RPC server"],
+      "fastapi": ["FastAPI application", "APIRouter", "path operations"],
+      "integration": ["API client", "SDK", "wrapper"],
+      "documentation": ["OpenAPI spec", "Swagger", "API contract"],
+      "architecture": ["internal API", "module interface", "class methods"]
+    }
+  },
+  "make it portable": {
+    "ambiguity_score": 0.88,
+    "category": "unclear_scope",
+    "contexts": ["deployment", "distribution", "platform", "packaging"],
+    "user_triggers": ["make it portable", "need portability", "portable version"],
+    "domains": {
+      "devops": ["Docker", "container", "Kubernetes"],
+      "build": ["cross-platform", "multi-OS"],
+      "packaging": ["vendoring", "bundled dependencies"],
+      "distribution": ["standalone executable", "binary"]
+    }
+  },
+  "check for gaps": {
+    "ambiguity_score": 0.82,
+    "category": "unclear_scope",
+    "contexts": ["testing", "documentation", "features", "security", "data"],
+    "user_triggers": ["check for gaps", "find gaps", "gap analysis", "what's missing"],
+    "domains": {
+      "testing": ["code coverage", "untested code", "missing tests"],
+      "documentation": ["missing docs", "incomplete guides", "undocumented functions"],
+      "product": ["missing features", "incomplete functionality", "backlog"],
+      "security": ["vulnerabilities", "security holes", "CVE"],
+      "data": ["missing data", "null values", "incomplete records"]
+    }
+  },
+  "am I making sense": {
+    "ambiguity_score": 1.0,
+    "category": "meta_question",
+    "contexts": ["validation_request", "clarification_needed"],
+    "user_triggers": ["am i making sense", "does this make sense", "making sense?"],
+    "response_pattern": "validate_recent_conversation",
+    "action": "analyze_last_5_to_10_messages_for_ambiguities"
+  },
+  "does this make sense": {
+    "ambiguity_score": 1.0,
+    "category": "meta_question",
+    "contexts": ["validation_request", "approach_confirmation"],
+    "user_triggers": ["does this make sense", "make sense?", "is this right"],
+    "response_pattern": "validate_approach",
+    "action": "summarize_understanding_and_clarify"
+  },
+  "non-technical user": {
+    "ambiguity_score": 0.95,
+    "category": "user_self_identification",
+    "contexts": ["expertise_level", "explanation_needed"],
+    "user_triggers": ["non-technical user", "i'm not technical", "beginner"],
+    "response_pattern": "increase_validation_sensitivity",
+    "action": "provide_detailed_explanations_and_validate_frequently"
+  },
+  "create an agent": {
+    "ambiguity_score": 0.75,
+    "category": "domain_specific",
+    "contexts": ["agent_type", "framework"],
+    "user_triggers": ["create an agent", "create agent", "new agent", "make an agent"],
+    "domains": {
+      "autogen": ["ConversableAgent", "AssistantAgent", "UserProxyAgent"],
+      "langroid": ["ChatAgent", "ToolAgent", "custom Agent subclass"],
+      "general": ["AI agent", "chatbot", "assistant"]
+    }
+  },
+  "group conversation": {
+    "ambiguity_score": 0.7,
+    "category": "domain_specific",
+    "contexts": ["multi_agent", "orchestration"],
+    "user_triggers": ["group conversation", "group chat", "multi-agent conversation"],
+    "domains": {
+      "autogen": ["GroupChat", "GroupChatManager"],
+      "langroid": ["Task delegation", "subtasks"],
+      "general": ["multi-agent system", "agent collaboration"]
+    }
+  },
+  "agent with tools": {
+    "ambiguity_score": 0.78,
+    "category": "domain_specific",
+    "contexts": ["function_calling", "tool_integration"],
+    "user_triggers": ["agent with tools", "tools for agent", "agent tools"],
+    "domains": {
+      "autogen": ["register_for_llm()", "register_for_execution()", "function calling"],
+      "langroid": ["ToolMessage", "@tool decorator"],
+      "mcp": ["MCP tool definition", "tool schema", "tool invocation"],
+      "utcp": ["UTCP tool calling", "universal tool protocol"],
+      "general": ["function calling", "external APIs", "tool use"]
+    }
+  },
+  "make it work": {
+    "ambiguity_score": 0.92,
+    "category": "vague_action_verb",
+    "contexts": ["debugging", "implementation", "configuration"],
+    "user_triggers": ["make it work", "get it working", "fix it"],
+    "clarification_needed": ["What specifically isn't working?", "Error message?", "Expected vs actual behavior?"]
+  },
+  "make it faster": {
+    "ambiguity_score": 0.85,
+    "category": "performance",
+    "contexts": ["optimization", "latency", "throughput"],
+    "user_triggers": ["make it faster", "speed it up", "improve performance", "optimize"],
+    "clarification_needed": ["Which metric? Response time, throughput, startup time?"]
+  },
+  "make it secure": {
+    "ambiguity_score": 0.83,
+    "category": "security",
+    "contexts": ["authentication", "authorization", "encryption", "validation"],
+    "user_triggers": ["make it secure", "add security", "secure this"],
+    "clarification_needed": ["Which security aspect? Auth, data protection, input validation?"]
+  },
+  "add validation": {
+    "ambiguity_score": 0.72,
+    "category": "unclear_scope",
+    "contexts": ["input", "business_logic", "schema", "types"],
+    "user_triggers": ["add validation", "validate input", "validation needed"],
+    "domains": {
+      "fastapi": ["Pydantic validation", "request validation", "response model"],
+      "general": ["input validation", "business logic", "schema validation"]
+    },
+    "clarification_needed": ["Input validation, business logic validation, or schema validation?"]
+  },
+  "component": {
+    "ambiguity_score": 0.68,
+    "category": "generic_term",
+    "contexts": ["frontend", "backend", "architecture", "code"],
+    "user_triggers": ["component", "create component", "add component"],
+    "clarification_needed": ["UI component, backend service, or code module?"]
+  },
+  "service": {
+    "ambiguity_score": 0.7,
+    "category": "generic_term",
+    "contexts": ["microservices", "backend", "system", "cloud"],
+    "user_triggers": ["service", "create service", "add service"],
+    "domains": {
+      "mcp": ["MCP server", "server implementation"],
+      "microservices": ["independent service", "API service"],
+      "cloud": ["AWS service", "managed service"]
+    },
+    "clarification_needed": ["MCP server, microservice, backend API service, or cloud service?"]
+  },
+  "module": {
+    "ambiguity_score": 0.65,
+    "category": "generic_term",
+    "contexts": ["python", "javascript", "architecture", "system"],
+    "user_triggers": ["module", "create module", "add module"],
+    "clarification_needed": ["Python module, npm package, or logical code module?"]
+  },
+  "task": {
+    "ambiguity_score": 0.73,
+    "category": "multi_domain",
+    "contexts": ["langroid", "async", "todo", "general"],
+    "user_triggers": ["task", "create task", "run task"],
+    "domains": {
+      "langroid": ["Task object", "Task.run()", "task orchestration"],
+      "celery": ["async task", "task queue", "background job"],
+      "general": ["todo item", "work item", "goal"]
+    }
+  },
+  "tool": {
+    "ambiguity_score": 0.76,
+    "category": "multi_domain",
+    "contexts": ["autogen", "langroid", "mcp", "utcp", "cli", "utility"],
+    "user_triggers": ["tool", "add tool", "use tool"],
+    "domains": {
+      "autogen": ["function calling", "register_for_llm()"],
+      "langroid": ["ToolMessage", "@tool decorator"],
+      "mcp": ["MCP tool", "tool definition", "tool schema"],
+      "utcp": ["UTCP tool", "universal tool calling"],
+      "general": ["CLI tool", "utility", "library"]
+    }
+  },
+  "mcp server": {
+    "ambiguity_score": 0.7,
+    "category": "infrastructure_type",
+    "contexts": ["protocol", "server_type", "integration"],
+    "user_triggers": ["mcp server", "create mcp server", "add mcp server"],
+    "domains": {
+      "mcp": {
+        "server_types": ["SSE (Server-Sent Events)", "stdio", "HTTP", "WebSocket"],
+        "components": ["tools", "resources", "prompts", "sampling"],
+        "patterns": ["local server", "remote server", "managed server"]
+      }
+    },
+    "clarification_needed": ["Which MCP server type? SSE, stdio, HTTP, or WebSocket?"]
+  },
+  "resource": {
+    "ambiguity_score": 0.68,
+    "category": "multi_domain",
+    "contexts": ["mcp", "system", "data", "infrastructure"],
+    "user_triggers": ["resource", "add resource", "create resource"],
+    "domains": {
+      "mcp": ["MCP resource", "resource URI", "resource template"],
+      "system": ["CPU/memory resource", "system resources"],
+      "cloud": ["AWS resource", "infrastructure resource"],
+      "data": ["data resource", "file resource"]
+    },
+    "clarification_needed": ["MCP resource, system resource, or cloud infrastructure?"]
+  },
+  "prompt": {
+    "ambiguity_score": 0.65,
+    "category": "ai_specific",
+    "contexts": ["llm", "mcp", "user_input"],
+    "user_triggers": ["prompt", "create prompt", "add prompt"],
+    "domains": {
+      "mcp": ["MCP prompt template", "prompt resource"],
+      "llm": ["LLM prompt", "system prompt", "user prompt"],
+      "general": ["command prompt", "user input"]
+    },
+    "clarification_needed": ["MCP prompt template, LLM prompt, or command-line prompt?"]
+  },
+  "memory": {
+    "ambiguity_score": 0.75,
+    "category": "knowledge_structure",
+    "contexts": ["ai", "system", "storage"],
+    "user_triggers": ["memory", "add memory", "store in memory"],
+    "domains": {
+      "memory_graph": ["knowledge graph", "memory nodes", "relationships"],
+      "vector_memory": ["embeddings", "vector database", "semantic search"],
+      "episodic_memory": ["conversation history", "temporal context", "session memory"],
+      "system": ["RAM", "memory allocation", "heap/stack"]
+    },
+    "clarification_needed": ["Memory graph, vector memory, episodic memory, or system RAM?"]
+  },
+  "graph": {
+    "ambiguity_score": 0.72,
+    "category": "data_structure",
+    "contexts": ["knowledge", "visualization", "algorithm"],
+    "user_triggers": ["graph", "create graph", "build graph"],
+    "domains": {
+      "knowledge_graph": ["entities", "relationships", "semantic network"],
+      "memory_graph": ["memory nodes", "connections", "retrieval paths"],
+      "visualization": ["chart", "plot", "diagram"],
+      "algorithm": ["graph data structure", "nodes and edges"]
+    },
+    "clarification_needed": ["Knowledge graph, memory graph, visualization, or data structure?"]
+  },
+  "dependency": {
+    "ambiguity_score": 0.7,
+    "category": "multi_domain",
+    "contexts": ["fastapi", "package", "architecture"],
+    "user_triggers": ["dependency", "add dependency", "inject dependency"],
+    "domains": {
+      "fastapi": ["Depends()", "dependency injection", "path operation dependency"],
+      "package": ["pip dependency", "npm package", "library requirement"],
+      "architecture": ["service dependency", "component dependency"]
+    },
+    "clarification_needed": ["FastAPI Depends(), package dependency, or architectural dependency?"]
+  },
+  "endpoint": {
+    "ambiguity_score": 0.65,
+    "category": "api_specific",
+    "contexts": ["fastapi", "rest", "network"],
+    "user_triggers": ["endpoint", "create endpoint", "add endpoint"],
+    "domains": {
+      "fastapi": ["path operation", "@app.get", "@app.post", "APIRouter"],
+      "rest": ["REST endpoint", "API route"],
+      "network": ["network endpoint", "connection point"]
+    },
+    "clarification_needed": ["FastAPI path operation, REST endpoint, or network endpoint?"]
+  },
+  "model": {
+    "ambiguity_score": 0.78,
+    "category": "multi_domain",
+    "contexts": ["fastapi", "ai", "database", "architecture"],
+    "user_triggers": ["model", "create model", "define model"],
+    "domains": {
+      "fastapi": ["Pydantic BaseModel", "request/response model"],
+      "ai": ["LLM model", "ML model", "trained model"],
+      "database": ["data model", "ORM model", "schema"],
+      "architecture": ["domain model", "model layer"]
+    },
+    "clarification_needed": ["Pydantic model, AI/ML model, database model, or domain model?"]
+  },
+  "merge": {
+    "ambiguity_score": 0.72,
+    "category": "git_operation",
+    "contexts": ["git", "github", "gitflow", "data"],
+    "user_triggers": ["merge", "merge this", "merge branch"],
+    "domains": {
+      "git": ["git merge", "fast-forward merge", "merge commit"],
+      "github": ["pull request merge", "squash and merge", "rebase and merge"],
+      "gitflow": ["feature to develop", "release to main", "hotfix merge"],
+      "data": ["data merge", "combine datasets"]
+    },
+    "clarification_needed": ["Git merge, PR merge strategy, Gitflow merge, or data merge?"]
+  },
+  "branch": {
+    "ambiguity_score": 0.68,
+    "category": "git_concept",
+    "contexts": ["git", "gitflow", "algorithm"],
+    "user_triggers": ["branch", "create branch", "switch branch"],
+    "domains": {
+      "git": ["git branch", "branch creation", "branch switching"],
+      "gitflow": ["feature branch", "release branch", "hotfix branch", "develop branch"],
+      "algorithm": ["code branch", "conditional branch", "if statement"]
+    },
+    "clarification_needed": ["Git branch, Gitflow branch type, or conditional branch?"]
+  },
+  "rebase": {
+    "ambiguity_score": 0.8,
+    "category": "git_operation",
+    "contexts": ["git", "workflow"],
+    "user_triggers": ["rebase", "rebase on", "interactive rebase"],
+    "domains": {
+      "git": ["git rebase", "rebase onto", "interactive rebase -i"],
+      "workflow": ["rebase vs merge", "clean history", "conflict resolution"]
+    },
+    "clarification_needed": ["Standard rebase, interactive rebase, or rebase onto specific branch?"]
+  },
+  "commit": {
+    "ambiguity_score": 0.65,
+    "category": "git_operation",
+    "contexts": ["git", "database", "general"],
+    "user_triggers": ["commit", "commit this", "make a commit"],
+    "domains": {
+      "git": ["git commit", "commit message", "amend commit"],
+      "database": ["transaction commit", "COMMIT statement"],
+      "general": ["commit to decision", "dedication"]
+    },
+    "clarification_needed": ["Git commit, database transaction commit, or general commitment?"]
+  },
+  "observability": {
+    "ambiguity_score": 0.6,
+    "category": "sre_concept",
+    "contexts": ["monitoring", "logging", "tracing"],
+    "user_triggers": ["observability", "add observability", "improve observability"],
+    "domains": {
+      "sre": {
+        "pillars": ["logs", "metrics", "traces"],
+        "patterns": ["golden signals", "RED method", "USE method"],
+        "tools": ["Prometheus", "Grafana", "OpenTelemetry", "Datadog"]
+      }
+    },
+    "clarification_needed": ["Which pillar? Logs, metrics, or traces? Or comprehensive observability?"]
+  },
+  "sli": {
+    "ambiguity_score": 0.7,
+    "category": "sre_metric",
+    "contexts": ["reliability", "monitoring"],
+    "user_triggers": ["sli", "service level indicator", "define sli"],
+    "domains": {
+      "sre": {
+        "types": ["availability SLI", "latency SLI", "throughput SLI", "error rate SLI"],
+        "related": ["SLO", "SLA", "error budget"]
+      }
+    }
+  },
+  "embedding": {
+    "ambiguity_score": 0.68,
+    "category": "ai_concept",
+    "contexts": ["vector", "nlp", "rag"],
+    "user_triggers": ["embedding", "create embedding", "vector embedding"],
+    "domains": {
+      "vector_memory": ["text embedding", "semantic embedding", "vector representation"],
+      "rag": ["document embedding", "chunk embedding", "retrieval"],
+      "nlp": ["word embedding", "sentence embedding", "model output"]
+    },
+    "clarification_needed": ["Text embedding for RAG, semantic search embedding, or NLP embedding?"]
+  },
+  "retrieval": {
+    "ambiguity_score": 0.7,
+    "category": "ai_pattern",
+    "contexts": ["rag", "memory", "search"],
+    "user_triggers": ["retrieval", "retrieve", "retrieval system"],
+    "domains": {
+      "rag": ["RAG retrieval", "document retrieval", "context retrieval"],
+      "memory": ["memory retrieval", "episodic retrieval", "semantic search"],
+      "database": ["data retrieval", "query", "SELECT"]
+    },
+    "clarification_needed": ["RAG retrieval, memory retrieval, or database query?"]
+  },
+  "behavior": {
+    "ambiguity_score": 0.72,
+    "category": "ai_psychology",
+    "contexts": ["ai_psychology", "programming", "testing"],
+    "user_triggers": ["behavior", "behavioral", "behavior pattern"],
+    "domains": {
+      "ai_psychology": ["agent behavior", "behavioral adaptation", "interaction patterns"],
+      "behavioral_programming": ["b-threads", "event-driven behavior", "scenario composition"],
+      "testing": ["behavior testing", "BDD", "behavioral specification"]
+    },
+    "clarification_needed": ["AI behavioral psychology, behavioral programming pattern, or behavior testing?"]
+  },
+  "agent behavior": {
+    "ambiguity_score": 0.75,
+    "category": "ai_psychology",
+    "contexts": ["psychology", "programming", "ai"],
+    "user_triggers": ["agent behavior", "behavioral pattern", "behavior model"],
+    "domains": {
+      "ai_psychology": ["cognitive patterns", "decision making", "adaptation", "learning"],
+      "behavioral_programming": ["reactive behavior", "proactive behavior", "goal-oriented"],
+      "agent_systems": ["multi-agent behavior", "emergent behavior", "coordination"]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "semantic-linguist",
+  "version": "1.0.0",
+  "description": "Semantic validation and translation between natural language user intent and domain-specific technical implementations. Bridges the gap between human natural language and AI specificity of needs.",
+  "author": {
+    "name": "jcmrs",
+    "email": "user@example.com"
+  },
+  "keywords": [
+    "semantic",
+    "translation",
+    "domain-translation",
+    "ontology",
+    "linguistics",
+    "autogen",
+    "langroid",
+    "mcp",
+    "model-context-protocol",
+    "utcp",
+    "tool-calling",
+    "universal-tool-calling",
+    "fastapi",
+    "python-web",
+    "pydantic",
+    "git",
+    "gitflow",
+    "version-control",
+    "sre",
+    "site-reliability",
+    "observability",
+    "memory-graphs",
+    "knowledge-graphs",
+    "embeddings",
+    "ambiguity-detection"
+  ],
+  "license": "MIT"
+}

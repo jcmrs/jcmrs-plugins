@@ -1,0 +1,759 @@
+{
+  "autogen": {
+    "agent_creation": {
+      "ConversableAgent": {
+        "purpose": "Basic conversational agent with LLM",
+        "use_cases": ["chatbot", "simple conversation", "Q&A"],
+        "key_methods": ["send()", "receive()", "generate_reply()", "register_reply()"],
+        "signature": "ConversableAgent(name, system_message, llm_config, human_input_mode='NEVER')"
+      },
+      "AssistantAgent": {
+        "purpose": "Agent with function/tool calling capabilities",
+        "use_cases": ["task execution", "tool usage", "code execution"],
+        "key_methods": ["register_for_llm()", "register_for_execution()"],
+        "signature": "AssistantAgent(name, system_message, llm_config)"
+      },
+      "UserProxyAgent": {
+        "purpose": "Human-in-the-loop agent, executes code on behalf of user",
+        "use_cases": ["human approval", "code execution", "function execution"],
+        "key_methods": ["initiate_chat()", "human_input_mode settings"],
+        "signature": "UserProxyAgent(name, human_input_mode, code_execution_config)"
+      }
+    },
+    "communication": {
+      "send()": {
+        "purpose": "Send message to specific recipient",
+        "pattern": "one-to-one messaging",
+        "signature": "agent.send(message, recipient, request_reply=True)"
+      },
+      "initiate_chat()": {
+        "purpose": "Start conversation with another agent",
+        "pattern": "conversational loop",
+        "signature": "agent.initiate_chat(recipient, message, max_turns=None)"
+      },
+      "GroupChat": {
+        "purpose": "Multi-agent conversation orchestration",
+        "pattern": "multi-party discussion",
+        "components": ["agents list", "messages", "max_round", "speaker_selection_method"],
+        "signature": "GroupChat(agents, messages, max_round, speaker_selection_method='auto')"
+      },
+      "GroupChatManager": {
+        "purpose": "Manage GroupChat conversation flow",
+        "pattern": "orchestrator for group conversations",
+        "signature": "GroupChatManager(groupchat, llm_config)"
+      }
+    },
+    "tool_integration": {
+      "register_for_llm()": {
+        "purpose": "Register function for LLM to call",
+        "pattern": "function calling - LLM side",
+        "usage": "@assistant.register_for_llm(description='...')"
+      },
+      "register_for_execution()": {
+        "purpose": "Register function for execution",
+        "pattern": "function calling - execution side",
+        "usage": "@user_proxy.register_for_execution()"
+      },
+      "function_calling": {
+        "purpose": "Enable agents to call Python functions",
+        "pattern": "LLM generates function call → UserProxy executes",
+        "requirements": ["function definition", "register_for_llm", "register_for_execution"]
+      }
+    }
+  },
+  "langroid": {
+    "agent_creation": {
+      "ChatAgent": {
+        "purpose": "Basic conversational agent",
+        "use_cases": ["simple chat", "Q&A", "base for specialized agents"],
+        "key_components": ["ChatAgentConfig", "llm", "vecdb (optional)"],
+        "signature": "ChatAgent(config=ChatAgentConfig(...))"
+      },
+      "ToolAgent": {
+        "purpose": "Agent with tool/function calling",
+        "use_cases": ["tool usage", "function calling", "API integration"],
+        "pattern": "ToolMessage pattern",
+        "signature": "Define ToolMessage subclass, agent auto-detects"
+      },
+      "ChatAgentConfig": {
+        "purpose": "Agent configuration",
+        "fields": ["name", "system_message", "llm", "vecdb", "use_tools"],
+        "signature": "ChatAgentConfig(name='...', system_message='...', llm=OpenAIGPTConfig(...))"
+      }
+    },
+    "task_orchestration": {
+      "Task": {
+        "purpose": "Orchestrate agent activities",
+        "use_cases": ["workflow management", "agent coordination", "task delegation"],
+        "key_methods": ["run()", "step()", "add_subtask()"],
+        "signature": "Task(agent, name='...', interactive=False)"
+      },
+      "task_delegation": {
+        "purpose": "Hierarchical task breakdown",
+        "pattern": "parent task → subtasks → child agents",
+        "usage": "parent_task.add_subtask(child_task)"
+      },
+      "sequential_workflow": {
+        "purpose": "Chain agents sequentially",
+        "pattern": "Agent A → Agent B → Agent C",
+        "implementation": "Task delegation in sequence"
+      }
+    },
+    "messaging": {
+      "LLMMessage": {
+        "purpose": "Message to/from LLM",
+        "fields": ["role", "content"],
+        "roles": ["system", "user", "assistant"]
+      },
+      "ToolMessage": {
+        "purpose": "Tool/function call message",
+        "pattern": "subclass ToolMessage, define handle() method",
+        "fields": ["request", "purpose", "parameters"]
+      },
+      "llm_response()": {
+        "purpose": "Get LLM response",
+        "signature": "agent.llm_response(message)"
+      },
+      "agent_response()": {
+        "purpose": "Agent's custom response logic",
+        "pattern": "override in custom agent subclass"
+      }
+    }
+  },
+  "mcp": {
+    "server_types": {
+      "SSE_server": {
+        "purpose": "Server-Sent Events transport for MCP",
+        "use_cases": ["web-based integrations", "real-time updates", "browser clients"],
+        "characteristics": ["unidirectional streaming", "HTTP-based", "firewall-friendly"],
+        "signature": "Start SSE endpoint on HTTP server"
+      },
+      "stdio_server": {
+        "purpose": "Standard input/output transport for MCP",
+        "use_cases": ["local processes", "command-line tools", "subprocess integration"],
+        "characteristics": ["process-to-process communication", "no network required"],
+        "signature": "Launch process with stdin/stdout pipes"
+      },
+      "HTTP_server": {
+        "purpose": "HTTP transport for MCP",
+        "use_cases": ["RESTful integration", "cloud services", "webhook patterns"],
+        "characteristics": ["request-response pattern", "stateless", "standard HTTP methods"],
+        "signature": "HTTP POST to MCP endpoint"
+      },
+      "WebSocket_server": {
+        "purpose": "WebSocket transport for MCP",
+        "use_cases": ["bidirectional communication", "persistent connections", "real-time apps"],
+        "characteristics": ["full-duplex", "low latency", "stateful connection"],
+        "signature": "WebSocket connection to MCP endpoint"
+      }
+    },
+    "components": {
+      "tools": {
+        "purpose": "Executable functions exposed by MCP server",
+        "pattern": "Tool definition with schema → invocation → result",
+        "structure": {
+          "name": "unique tool identifier",
+          "description": "human-readable purpose",
+          "input_schema": "JSON Schema for parameters",
+          "output_schema": "JSON Schema for result"
+        },
+        "usage": "Client calls tool by name with parameters, server executes and returns result"
+      },
+      "resources": {
+        "purpose": "Data sources exposed by MCP server",
+        "pattern": "Resource URI → read operation → content",
+        "types": ["file://", "http://", "custom://"],
+        "structure": {
+          "uri": "unique resource identifier",
+          "name": "human-readable label",
+          "mime_type": "content type",
+          "description": "purpose and contents"
+        },
+        "usage": "Client reads resource by URI, server returns content"
+      },
+      "prompts": {
+        "purpose": "Pre-defined prompt templates",
+        "pattern": "Prompt template with variables → fill values → expanded prompt",
+        "structure": {
+          "name": "unique prompt identifier",
+          "description": "when to use this prompt",
+          "arguments": "variable placeholders",
+          "template": "prompt text with {{variables}}"
+        },
+        "usage": "Client requests prompt with arguments, server returns filled template"
+      },
+      "sampling": {
+        "purpose": "MCP server requests LLM completion from client",
+        "pattern": "Server sends prompt → Client's LLM generates → Server receives result",
+        "use_cases": ["server needs LLM reasoning", "agentic server behavior"],
+        "flow": "Server → sampling request → Client LLM → completion → Server"
+      }
+    },
+    "integration_patterns": {
+      "local_server": {
+        "purpose": "MCP server running on same machine as client",
+        "transport": "stdio",
+        "use_cases": ["file system access", "local tools", "development"],
+        "example": "Claude Desktop → stdio → local Python MCP server"
+      },
+      "remote_server": {
+        "purpose": "MCP server on different machine",
+        "transport": ["HTTP", "WebSocket", "SSE"],
+        "use_cases": ["cloud services", "shared tools", "production"],
+        "example": "Claude Desktop → HTTP → cloud MCP server"
+      },
+      "managed_server": {
+        "purpose": "MCP server managed by platform",
+        "transport": "platform-specific",
+        "use_cases": ["official integrations", "vendor-provided tools"],
+        "example": "Claude Desktop → managed → Anthropic-hosted MCP server"
+      }
+    }
+  },
+  "utcp": {
+    "tool_calling_patterns": {
+      "universal_tool_schema": {
+        "purpose": "Standardized schema for tool definitions across frameworks",
+        "components": ["name", "description", "parameters", "returns"],
+        "benefit": "Framework-agnostic tool definitions",
+        "usage": "Define once, use across Autogen, Langroid, OpenAI, etc."
+      },
+      "tool_invocation": {
+        "purpose": "Standardized method for calling tools",
+        "pattern": "tool_name(params) → validation → execution → result",
+        "error_handling": "Consistent error format across frameworks",
+        "usage": "Invoke tools the same way regardless of underlying framework"
+      },
+      "tool_registration": {
+        "purpose": "Register tools with framework",
+        "pattern": "UTCP adapter → framework-specific registration",
+        "adapters": ["autogen_adapter", "langroid_adapter", "openai_adapter"],
+        "usage": "Register UTCP tool, adapter handles framework specifics"
+      }
+    },
+    "protocol_components": {
+      "tool_catalog": {
+        "purpose": "Registry of available tools",
+        "structure": "Map of tool name → tool definition",
+        "operations": ["list_tools()", "get_tool(name)", "register_tool(definition)"],
+        "usage": "Central catalog for tool discovery"
+      },
+      "parameter_validation": {
+        "purpose": "Validate tool parameters before execution",
+        "schema": "JSON Schema or Pydantic models",
+        "checks": ["type checking", "required fields", "value constraints"],
+        "usage": "Validate params before calling tool function"
+      },
+      "result_formatting": {
+        "purpose": "Standardized tool result format",
+        "structure": {
+          "success": "boolean",
+          "result": "tool output",
+          "error": "error details if failed",
+          "metadata": "execution info"
+        },
+        "usage": "Consistent result handling across frameworks"
+      }
+    },
+    "integration": {
+      "autogen_integration": {
+        "purpose": "Use UTCP tools in Autogen",
+        "adapter": "UTCPAutogenAdapter",
+        "pattern": "UTCP tool → register_for_llm/execution",
+        "usage": "adapter.register_utcp_tool(autogen_agent, utcp_tool)"
+      },
+      "langroid_integration": {
+        "purpose": "Use UTCP tools in Langroid",
+        "adapter": "UTCPLangroidAdapter",
+        "pattern": "UTCP tool → ToolMessage subclass",
+        "usage": "adapter.create_tool_message(utcp_tool)"
+      },
+      "openai_integration": {
+        "purpose": "Use UTCP tools with OpenAI function calling",
+        "adapter": "UTCPOpenAIAdapter",
+        "pattern": "UTCP tool → OpenAI function schema",
+        "usage": "adapter.to_openai_function(utcp_tool)"
+      }
+    }
+  },
+  "fastapi": {
+    "routing": {
+      "path_operations": {
+        "purpose": "Define API endpoints with HTTP methods",
+        "decorators": ["@app.get()", "@app.post()", "@app.put()", "@app.delete()", "@app.patch()"],
+        "pattern": "Decorator defines route, function handles request",
+        "signature": "@app.get('/users/{user_id}') async def get_user(user_id: int):"
+      },
+      "APIRouter": {
+        "purpose": "Organize routes into modules",
+        "use_cases": ["separate concerns", "versioning", "modular APIs"],
+        "pattern": "Create router → define routes → include in main app",
+        "signature": "router = APIRouter(prefix='/api/v1', tags=['users'])"
+      },
+      "path_parameters": {
+        "purpose": "Extract values from URL path",
+        "pattern": "Define in path with {param_name}, receive as function argument",
+        "validation": "Automatic type conversion and validation",
+        "example": "/users/{user_id: int} → def get_user(user_id: int)"
+      },
+      "query_parameters": {
+        "purpose": "Extract values from URL query string",
+        "pattern": "Define as function parameters, automatically parsed from ?key=value",
+        "optional": "Use Optional[type] or default values",
+        "example": "?limit=10&offset=0 → def list_users(limit: int = 10, offset: int = 0)"
+      }
+    },
+    "dependency_injection": {
+      "Depends()": {
+        "purpose": "Declare dependencies for path operations",
+        "pattern": "Depends(dependency_function) → executed before handler",
+        "use_cases": ["database sessions", "authentication", "shared logic"],
+        "signature": "def get_db(): ... → async def handler(db = Depends(get_db)):"
+      },
+      "dependency_hierarchy": {
+        "purpose": "Dependencies can have their own dependencies",
+        "pattern": "Nested Depends() calls, FastAPI resolves recursively",
+        "example": "get_current_user depends on get_token, get_token depends on OAuth2PasswordBearer",
+        "usage": "Build complex dependency chains declaratively"
+      },
+      "dependency_overrides": {
+        "purpose": "Replace dependencies for testing",
+        "pattern": "app.dependency_overrides[original] = mock",
+        "use_cases": ["test with mock database", "test without auth"],
+        "usage": "Override production dependencies with test doubles"
+      }
+    },
+    "validation": {
+      "pydantic_models": {
+        "purpose": "Request/response data validation and serialization",
+        "pattern": "Define Pydantic model → use as type hint → automatic validation",
+        "features": ["type checking", "default values", "custom validators", "JSON serialization"],
+        "signature": "class User(BaseModel): name: str; email: EmailStr"
+      },
+      "request_body": {
+        "purpose": "Validate POST/PUT request body",
+        "pattern": "Pydantic model as parameter type → automatic parsing and validation",
+        "errors": "422 Unprocessable Entity with detailed validation errors",
+        "example": "async def create_user(user: UserCreate):"
+      },
+      "response_model": {
+        "purpose": "Validate and serialize response data",
+        "pattern": "response_model parameter in decorator → output validation",
+        "features": ["exclude fields", "filter None values", "type coercion"],
+        "example": "@app.post('/users/', response_model=UserResponse)"
+      },
+      "field_validation": {
+        "purpose": "Custom validation logic for model fields",
+        "decorators": ["@validator", "@root_validator", "@field_validator (Pydantic v2)"],
+        "pattern": "Define validation method, decorate with validator",
+        "example": "@validator('email') def validate_email(cls, v): ..."
+      }
+    },
+    "async_operations": {
+      "async_def": {
+        "purpose": "Define asynchronous path operations",
+        "pattern": "async def handler → await async operations",
+        "use_cases": ["database queries", "external API calls", "I/O operations"],
+        "signature": "async def get_user(user_id: int, db = Depends(get_db)): user = await db.get(user_id)"
+      },
+      "background_tasks": {
+        "purpose": "Run tasks after returning response",
+        "pattern": "BackgroundTasks parameter → add_task(function, *args)",
+        "use_cases": ["send email", "update cache", "log analytics"],
+        "example": "async def signup(bg_tasks: BackgroundTasks): bg_tasks.add_task(send_email)"
+      },
+      "async_dependencies": {
+        "purpose": "Asynchronous dependency functions",
+        "pattern": "async def get_db() → await operations → yield db",
+        "cleanup": "Code after yield runs after request completes",
+        "example": "async def get_db(): db = await connect(); yield db; await db.close()"
+      }
+    }
+  },
+  "git_gitflow": {
+    "core_operations": {
+      "merge": {
+        "purpose": "Combine branches",
+        "types": {
+          "fast_forward": "Linear history, no merge commit",
+          "three_way": "Merge commit with two parents",
+          "squash": "Combine all commits into one"
+        },
+        "commands": ["git merge feature-branch", "git merge --no-ff", "git merge --squash"],
+        "use_cases": ["integrate feature", "combine changes", "update main branch"]
+      },
+      "rebase": {
+        "purpose": "Reapply commits on different base",
+        "types": {
+          "standard": "Move commits to new base, rewrite history",
+          "interactive": "Edit, squash, reorder commits during rebase",
+          "onto": "Rebase onto specific commit, not branch tip"
+        },
+        "commands": ["git rebase main", "git rebase -i HEAD~3", "git rebase --onto new-base old-base"],
+        "use_cases": ["clean history", "update feature branch", "edit commit history"]
+      },
+      "commit": {
+        "purpose": "Save changes to repository",
+        "pattern": "Stage changes → write commit message → create commit object",
+        "commands": ["git commit -m 'message'", "git commit --amend", "git commit -a"],
+        "best_practices": ["atomic commits", "descriptive messages", "conventional commits format"]
+      },
+      "branch": {
+        "purpose": "Create and manage branches",
+        "operations": ["create", "delete", "rename", "list"],
+        "commands": ["git branch feature-name", "git branch -d branch-name", "git branch -m new-name"],
+        "patterns": ["feature branches", "topic branches", "long-lived branches"]
+      }
+    },
+    "gitflow_patterns": {
+      "feature_branch": {
+        "purpose": "Develop new features in isolation",
+        "pattern": "Branch from develop → work → merge back to develop",
+        "naming": "feature/feature-name or feature/TICKET-123",
+        "lifecycle": "git flow feature start → commits → git flow feature finish"
+      },
+      "release_branch": {
+        "purpose": "Prepare for production release",
+        "pattern": "Branch from develop → version bump + fixes → merge to main and develop",
+        "naming": "release/v1.2.0 or release/1.2.0",
+        "lifecycle": "git flow release start → version changes → git flow release finish → tag"
+      },
+      "hotfix_branch": {
+        "purpose": "Emergency fixes for production",
+        "pattern": "Branch from main → fix → merge to main and develop",
+        "naming": "hotfix/fix-critical-bug or hotfix/v1.2.1",
+        "lifecycle": "git flow hotfix start → fix → git flow hotfix finish → tag"
+      },
+      "develop_branch": {
+        "purpose": "Integration branch for features",
+        "pattern": "Long-lived branch, receives feature merges",
+        "usage": "Base for feature branches, merged to release for deployment",
+        "never": "Direct commits to develop (use feature branches)"
+      },
+      "main_branch": {
+        "purpose": "Production-ready code",
+        "pattern": "Long-lived branch, only receives release/hotfix merges",
+        "tags": "Each merge should be tagged with version",
+        "never": "Direct commits to main (use release/hotfix branches)"
+      }
+    },
+    "collaboration": {
+      "pull_request": {
+        "purpose": "Propose and review changes before merging",
+        "workflow": "Push branch → create PR → review → approve → merge",
+        "merge_strategies": ["merge commit", "squash and merge", "rebase and merge"],
+        "best_practices": ["descriptive title", "detailed description", "link to issues", "request reviewers"]
+      },
+      "code_review": {
+        "purpose": "Review changes for quality and correctness",
+        "checks": ["logic correctness", "code style", "tests", "performance", "security"],
+        "actions": ["approve", "request changes", "comment"],
+        "etiquette": ["be constructive", "explain reasoning", "suggest alternatives"]
+      },
+      "conflict_resolution": {
+        "purpose": "Resolve merge conflicts",
+        "process": "Git marks conflicts → manual resolution → stage resolved files → continue merge/rebase",
+        "tools": ["git mergetool", "VS Code merge editor", "manual editing"],
+        "prevention": ["frequent pulls", "small PRs", "communicate with team"]
+      }
+    }
+  },
+  "sre": {
+    "observability": {
+      "logs": {
+        "purpose": "Record discrete events for debugging",
+        "levels": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        "structure": ["timestamp", "level", "message", "context (user_id, request_id, etc.)"],
+        "tools": ["ELK Stack", "Splunk", "CloudWatch Logs", "Datadog"],
+        "use_cases": ["debugging", "audit trail", "error tracking"]
+      },
+      "metrics": {
+        "purpose": "Quantify system behavior over time",
+        "types": ["counters", "gauges", "histograms", "summaries"],
+        "golden_signals": ["latency", "traffic", "errors", "saturation"],
+        "tools": ["Prometheus", "Grafana", "CloudWatch Metrics", "Datadog"],
+        "use_cases": ["performance monitoring", "capacity planning", "alerting"]
+      },
+      "traces": {
+        "purpose": "Track requests across distributed system",
+        "components": ["spans", "trace context", "parent-child relationships"],
+        "standards": ["OpenTelemetry", "OpenTracing", "Zipkin"],
+        "tools": ["Jaeger", "Zipkin", "AWS X-Ray", "Datadog APM"],
+        "use_cases": ["distributed debugging", "performance optimization", "dependency mapping"]
+      }
+    },
+    "reliability_patterns": {
+      "SLI": {
+        "purpose": "Service Level Indicator - quantitative measure of service level",
+        "types": {
+          "availability": "Percentage of successful requests",
+          "latency": "Percentage of requests below threshold",
+          "throughput": "Requests per second",
+          "error_rate": "Percentage of failed requests"
+        },
+        "measurement": "SLI = (good events / total events) * 100",
+        "examples": ["99.9% of requests succeed", "95% of requests < 200ms"]
+      },
+      "SLO": {
+        "purpose": "Service Level Objective - target for SLI",
+        "pattern": "SLI ≥ target over time window",
+        "examples": ["99.9% availability over 30 days", "95% requests < 200ms over 7 days"],
+        "error_budget": "1 - SLO (e.g., 99.9% SLO = 0.1% error budget)",
+        "usage": "Set reliability targets, balance features vs reliability"
+      },
+      "SLA": {
+        "purpose": "Service Level Agreement - contractual commitment",
+        "components": ["SLO target", "measurement method", "consequences if missed"],
+        "examples": ["99.95% uptime SLA with service credits if missed"],
+        "legal": "Enforceable contract with customers",
+        "relationship": "SLA ≤ SLO (internal target higher than external promise)"
+      }
+    },
+    "incident_management": {
+      "detection": {
+        "purpose": "Identify service degradation",
+        "methods": ["automated alerts", "user reports", "synthetic monitoring"],
+        "tools": ["PagerDuty", "Opsgenie", "alertmanager"],
+        "best_practices": ["low false positive rate", "actionable alerts", "clear severity levels"]
+      },
+      "response": {
+        "purpose": "Restore service as quickly as possible",
+        "phases": ["acknowledge", "triage", "investigate", "mitigate", "resolve"],
+        "roles": ["incident commander", "communications lead", "subject matter experts"],
+        "tools": ["incident tracking", "communication channels", "runbooks"]
+      },
+      "postmortem": {
+        "purpose": "Learn from incidents to prevent recurrence",
+        "components": ["timeline", "root cause", "impact", "action items"],
+        "principles": ["blameless", "focus on systems", "share learnings"],
+        "outputs": ["incident report", "preventive measures", "process improvements"]
+      }
+    }
+  },
+  "memory_graphs": {
+    "graph_types": {
+      "knowledge_graph": {
+        "purpose": "Represent entities and relationships as graph",
+        "structure": "Nodes (entities) + Edges (relationships) + Properties",
+        "examples": ["Person -[WORKS_AT]-> Company", "Concept -[RELATED_TO]-> Concept"],
+        "use_cases": ["knowledge representation", "semantic search", "reasoning"],
+        "tools": ["Neo4j", "Amazon Neptune", "RDF/OWL"]
+      },
+      "memory_graph": {
+        "purpose": "Store episodic and semantic memory for AI agents",
+        "structure": "Memory nodes + temporal edges + context links",
+        "types": ["episodic (experiences)", "semantic (facts)", "procedural (how-to)"],
+        "use_cases": ["agent memory", "conversation history", "learned knowledge"],
+        "persistence": "Graph database or vector store with graph overlay"
+      },
+      "conversation_graph": {
+        "purpose": "Track dialogue structure and context",
+        "structure": "Turn nodes + speaker edges + topic links + temporal order",
+        "use_cases": ["multi-turn conversations", "context tracking", "topic modeling"],
+        "queries": ["find related conversations", "track topic evolution", "retrieve context"]
+      }
+    },
+    "storage_patterns": {
+      "vector_memory": {
+        "purpose": "Store memories as embeddings for semantic search",
+        "pattern": "Text/experience → embedding model → vector → vector DB",
+        "retrieval": "Query → embedding → similarity search → top-k results",
+        "tools": ["Pinecone", "Weaviate", "Chroma", "FAISS"],
+        "use_cases": ["semantic memory", "similar experience retrieval", "RAG"]
+      },
+      "episodic_memory": {
+        "purpose": "Store specific experiences with temporal context",
+        "structure": "Event + timestamp + participants + context + outcome",
+        "retrieval": "Temporal queries, participant queries, context similarity",
+        "usage": "Agent remembers past interactions, learns from experience",
+        "decay": "Memory importance fades over time (recency, frequency, importance)"
+      },
+      "semantic_memory": {
+        "purpose": "Store factual knowledge without temporal context",
+        "structure": "Fact + relationships + confidence + source",
+        "retrieval": "Concept-based queries, relationship traversal",
+        "usage": "Agent's general knowledge, learned facts",
+        "updates": "Reinforce with repetition, update with new information"
+      }
+    },
+    "retrieval_patterns": {
+      "RAG": {
+        "purpose": "Retrieval-Augmented Generation - retrieve context for LLM",
+        "pattern": "Query → retrieve relevant docs → augment prompt → LLM generates",
+        "components": ["retriever (vector search)", "ranker (rerank results)", "generator (LLM)"],
+        "use_cases": ["Q&A over documents", "knowledge-grounded generation"],
+        "improvements": ["hybrid search", "query rewriting", "multi-hop retrieval"]
+      },
+      "semantic_search": {
+        "purpose": "Find conceptually similar content",
+        "pattern": "Query → embedding → vector similarity → ranked results",
+        "metrics": ["cosine similarity", "dot product", "euclidean distance"],
+        "enhancements": ["metadata filtering", "hybrid keyword+vector", "reranking"],
+        "use_cases": ["similar memory retrieval", "related concept search"]
+      },
+      "graph_traversal": {
+        "purpose": "Navigate relationships to find connected information",
+        "patterns": ["breadth-first search", "depth-first search", "shortest path", "community detection"],
+        "queries": ["find related entities", "discover connections", "identify clusters"],
+        "use_cases": ["recommendation", "relationship discovery", "context expansion"]
+      }
+    }
+  },
+  "general": {
+    "api_types": {
+      "REST_API_server": {
+        "purpose": "HTTP server handling requests",
+        "frameworks": ["Express (Node.js)", "FastAPI (Python)", "Flask (Python)", "Spring Boot (Java)"],
+        "use_cases": ["backend service", "web API", "microservice"]
+      },
+      "GraphQL_API": {
+        "purpose": "Query language for APIs",
+        "frameworks": ["Apollo Server", "Strawberry (Python)", "GraphQL.js"],
+        "use_cases": ["flexible data fetching", "single endpoint"]
+      },
+      "API_client": {
+        "purpose": "Consume external APIs",
+        "libraries": ["axios", "requests", "fetch", "got"],
+        "use_cases": ["integrate with external services", "API consumption"]
+      },
+      "API_specification": {
+        "purpose": "Document API contract",
+        "tools": ["OpenAPI", "Swagger", "Postman"],
+        "use_cases": ["API documentation", "contract definition"]
+      }
+    },
+    "portability_types": {
+      "containerization": {
+        "purpose": "Package app with dependencies",
+        "tools": ["Docker", "Podman", "Kubernetes"],
+        "use_cases": ["deployment", "cloud-native", "microservices"]
+      },
+      "cross_platform": {
+        "purpose": "Run on multiple operating systems",
+        "approaches": ["native builds per OS", "cross-platform frameworks"],
+        "use_cases": ["desktop apps", "CLI tools"]
+      },
+      "dependency_vendoring": {
+        "purpose": "Bundle dependencies with application",
+        "tools": ["pip install --target", "npm bundle", "go mod vendor"],
+        "use_cases": ["offline installation", "reproducible builds"]
+      },
+      "standalone_executable": {
+        "purpose": "Single binary with no runtime dependencies",
+        "tools": ["PyInstaller", "pkg", "Electron", "Go compile"],
+        "use_cases": ["easy distribution", "no installation required"]
+      }
+    },
+    "validation_types": {
+      "input_validation": {
+        "purpose": "Validate user input and API parameters",
+        "tools": ["Pydantic", "Zod", "Joi", "JSON Schema"],
+        "checks": ["types", "formats", "ranges", "patterns"]
+      },
+      "business_logic_validation": {
+        "purpose": "Enforce business rules",
+        "approach": "custom validation functions",
+        "examples": ["order total > minimum", "user has required permissions"]
+      },
+      "schema_validation": {
+        "purpose": "Ensure data structure compliance",
+        "tools": ["ORM validators", "OpenAPI", "database constraints"],
+        "use_cases": ["database writes", "API contracts"]
+      }
+    },
+    "performance_optimization": {
+      "reduce_latency": {
+        "purpose": "Decrease response time",
+        "techniques": ["caching", "query optimization", "async/await", "CDN"],
+        "metric": "milliseconds from request to response"
+      },
+      "increase_throughput": {
+        "purpose": "Handle more concurrent requests",
+        "techniques": ["load balancing", "horizontal scaling", "connection pooling"],
+        "metric": "requests per second"
+      },
+      "reduce_memory": {
+        "purpose": "Lower memory footprint",
+        "techniques": ["streaming", "pagination", "optimize data structures"],
+        "metric": "MB of RAM used"
+      },
+      "faster_startup": {
+        "purpose": "Reduce cold start time",
+        "techniques": ["lazy loading", "pre-compilation", "smaller dependencies"],
+        "metric": "time to first request"
+      }
+    }
+  },
+  "cross_domain_equivalents": {
+    "basic_agent": {
+      "autogen": "ConversableAgent",
+      "langroid": "ChatAgent",
+      "general": "AI agent / chatbot"
+    },
+    "tool_agent": {
+      "autogen": "AssistantAgent with register_for_llm()",
+      "langroid": "ToolAgent / ToolMessage",
+      "mcp": "MCP server with tools",
+      "utcp": "UTCP-enabled agent",
+      "general": "Function-calling agent"
+    },
+    "multi_agent_chat": {
+      "autogen": "GroupChat + GroupChatManager",
+      "langroid": "Task delegation hierarchy",
+      "general": "Multi-agent system"
+    },
+    "send_message": {
+      "autogen": "send() method",
+      "langroid": "handle_message() / llm_response()",
+      "general": "Agent communication"
+    },
+    "start_conversation": {
+      "autogen": "initiate_chat()",
+      "langroid": "Task.run()",
+      "general": "Begin interaction"
+    },
+    "human_in_loop": {
+      "autogen": "UserProxyAgent with human_input_mode='ALWAYS'",
+      "langroid": "Task with interactive=True",
+      "general": "Human approval workflow"
+    },
+    "tool_definition": {
+      "autogen": "register_for_llm() + register_for_execution()",
+      "langroid": "ToolMessage subclass",
+      "mcp": "Tool component with schema",
+      "utcp": "Universal tool schema",
+      "openai": "Function calling schema",
+      "general": "Function/tool specification"
+    },
+    "data_source": {
+      "mcp": "Resource component",
+      "fastapi": "API endpoint",
+      "general": "Data retrieval mechanism"
+    },
+    "knowledge_storage": {
+      "memory_graphs": "Knowledge graph / Memory graph",
+      "vector_memory": "Vector database with embeddings",
+      "general": "Database / data store"
+    },
+    "api_server": {
+      "fastapi": "FastAPI application",
+      "mcp": "MCP HTTP/SSE server",
+      "general": "REST API / GraphQL API"
+    },
+    "code_integration": {
+      "git": "Merge / Pull Request",
+      "gitflow": "Feature finish / Release finish",
+      "general": "Combine code changes"
+    },
+    "service_quality": {
+      "sre": "SLI/SLO/SLA",
+      "fastapi": "Response time / Error rate",
+      "general": "Performance metrics"
+    },
+    "memory_retrieval": {
+      "memory_graphs": "Graph traversal / Vector search",
+      "rag": "Retrieval-Augmented Generation",
+      "general": "Information retrieval / Search"
+    }
+  }
+}

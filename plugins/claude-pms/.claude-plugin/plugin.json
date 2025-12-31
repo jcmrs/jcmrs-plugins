@@ -8,6 +8,8 @@
   "homepage": "https://github.com/jcmrs/jcmrs-plugins",
   "repository": "https://github.com/jcmrs/jcmrs-plugins",
   "license": "MIT",
+  "commands": "./commands",
+  "hooks": "./hooks/hooks.json",
   "keywords": [
     "memory",
     "learning",

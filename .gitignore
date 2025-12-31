@@ -48,3 +48,8 @@ htmlcov/
 # OS
 Thumbs.db
 .DS_Store
+
+# Local development directories
+.docs/
+plugins/qwen-delegation/
+plugins/qwen-tool/

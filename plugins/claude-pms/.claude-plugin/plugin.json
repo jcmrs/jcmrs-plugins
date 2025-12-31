@@ -1,0 +1,25 @@
+{
+  "name": "claude-pms",
+  "version": "1.0.0",
+  "description": "Procedural Memory System - Learns procedures, processes, and workflows from session experiences, generates project-scoped rules for consistent behavior. Shame on you.",
+  "author": {
+    "name": "JCMRS"
+  },
+  "homepage": "https://github.com/jcmrs/jcmrs-plugins",
+  "repository": "https://github.com/jcmrs/jcmrs-plugins",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "learning",
+    "procedural",
+    "patterns",
+    "rules",
+    "cognitive",
+    "episodic",
+    "semantic",
+    "procedural-memory",
+    "session-learning",
+    "code-patterns",
+    "user-preferences"
+  ]
+}

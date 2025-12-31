@@ -1,0 +1,158 @@
+# Session Analysis Prompt - Episodic Encoding
+
+## Task
+Analyze the provided session transcript and extract structured episodic information for procedural memory learning.
+
+## Input
+You will receive either:
+- $CONVERSATION_HISTORY: Complete conversation history from current session
+- $JSONL_EXCERPT: Sample of JSONL transcript records (if context unavailable)
+
+## Output Format
+Return a valid JSON object with the following structure:
+
+```json
+{
+  "task_summary": "Brief 1-2 sentence summary of what was accomplished",
+  "work_summary": "Detailed summary of work performed (2-3 paragraphs)",
+  "design_decisions": [
+    "Specific design decisions with rationale (why chosen over alternatives)"
+  ],
+  "challenges": [
+    "Problems encountered during implementation"
+  ],
+  "solutions": [
+    "How challenges were resolved"
+  ],
+  "user_preferences": [
+    "Preferences extracted from user corrections, feedback, or explicit statements"
+  ],
+  "code_patterns": [
+    "Coding patterns or practices observed (language-specific, framework-specific, workflow)"
+  ],
+  "anti_patterns": [
+    "Mistakes made or patterns explicitly discouraged by user"
+  ],
+  "context": {
+    "technologies": ["Technology/framework names used"],
+    "files_modified": ["Exact file paths that were changed"],
+    "tools_used": ["Tool names used during session"]
+  }
+}
+```
+
+## Instructions
+
+### 1. Be Factual and Specific
+- Use exact file paths (e.g., "src/components/Button.tsx", not "Button component")
+- Include actual error messages verbatim
+- Note specific function/class names modified
+- Preserve technical terminology
+
+### 2. Extract User Preferences
+User preferences come from:
+- **Direct corrections**: "Don't do X, do Y instead"
+- **Feedback patterns**: "I prefer this approach because..."
+- **Explicit preferences**: "Always run tests before commits"
+- **Repeated patterns**: User consistently chooses certain approaches
+
+Examples of valid preferences:
+- "Always run tests before marking tasks complete"
+- "Use TDD workflow (test → implement → refactor)"
+- "Prefer explicit over implicit (no magic)"
+- "Commit messages must be specific, not generic"
+
+### 3. Identify Code Patterns
+Code patterns are **observable practices** from the session:
+- Language/framework conventions followed
+- Testing strategies used
+- Error handling approaches
+- Architectural patterns applied
+- Tooling workflows
+
+Examples:
+- "Use TypeScript interfaces for all component props"
+- "Mock external dependencies in unit tests"
+- "Implement features with context-first + JSONL fallback"
+- "Group related functions in utility modules"
+
+### 4. Note Anti-Patterns
+Anti-patterns are **mistakes made** or **practices explicitly discouraged**:
+- Bugs introduced and fixed
+- Approaches tried and abandoned
+- User corrections of problematic patterns
+- Violations of established practices
+
+Examples:
+- "Avoid hardcoding values - use configuration"
+- "Don't mock everything - use real dependencies when possible"
+- "Never skip running tests after changes"
+
+### 5. Preserve Context
+Capture environmental details:
+- **Technologies**: Python, React, FastAPI, pytest, etc.
+- **Files**: Full paths to files created/modified/deleted
+- **Tools**: Command-line tools, frameworks, libraries used
+
+### 6. Distinguish Patterns from One-Off Actions
+Only include patterns that:
+- Have clear rationale (not arbitrary)
+- Could apply to future sessions
+- Reflect user's working style or preferences
+
+Exclude:
+- Random variable names
+- Project-specific implementation details
+- Temporary debugging statements
+
+## Examples
+
+### Example Input (Conversation History)
+```
+User: Create a Button component with TypeScript
+Assistant: [creates Button.tsx with interface]
+User: Good, but always export interfaces separately in types.ts
+Assistant: [moves ButtonProps to types.ts]
+User: And make sure to write tests first before implementing
+Assistant: [creates Button.test.tsx, then implements]
+```
+
+### Example Output
+```json
+{
+  "task_summary": "Created reusable Button component with TypeScript",
+  "work_summary": "Implemented Button component following TDD workflow. First created test file Button.test.tsx with basic rendering test, then implemented minimal component to pass test. Extracted ButtonProps interface to separate types.ts file per user preference for centralized type definitions.",
+  "design_decisions": [
+    "Exported interfaces separately in types.ts for centralized type management"
+  ],
+  "challenges": [],
+  "solutions": [],
+  "user_preferences": [
+    "Always export interfaces separately in types.ts (centralized types)",
+    "Write tests first before implementing (TDD workflow)"
+  ],
+  "code_patterns": [
+    "Use TDD workflow for new components (test → implement → refactor)"
+  ],
+  "anti_patterns": [],
+  "context": {
+    "technologies": ["TypeScript", "React", "Jest"],
+    "files_modified": ["src/components/Button.tsx", "src/components/Button.test.tsx", "src/types.ts"],
+    "tools_used": ["jest", "tsc"]
+  }
+}
+```
+
+## Quality Criteria
+- All fields present (empty arrays if no data)
+- Descriptions are specific and actionable
+- File paths are exact, not vague
+- Patterns have clear rationale
+- JSON is valid and properly escaped
+- No placeholder text or TODOs
+
+## Edge Cases
+- **Empty session**: Return minimal structure with empty arrays
+- **Only file edits, no discussion**: Extract patterns from code changes
+- **User contradicted themselves**: Use most recent preference
+- **Uncertain categorization**: Default to challenges/solutions rather than patterns

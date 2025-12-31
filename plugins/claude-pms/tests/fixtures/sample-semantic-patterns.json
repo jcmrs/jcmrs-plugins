@@ -1,0 +1,64 @@
+{
+  "patterns": [
+    {
+      "pattern_id": "pref_123456",
+      "description": "Always use HTTPOnly cookies for auth tokens",
+      "category": "preference",
+      "strength": "strong",
+      "occurrences": 5,
+      "evidence": [
+        "test-session-abc123",
+        "test-session-def456",
+        "test-session-ghi789",
+        "test-session-jkl012",
+        "test-session-mno345"
+      ],
+      "detected_at": "2025-12-31T12:00:00Z"
+    },
+    {
+      "pattern_id": "code_234567",
+      "description": "Middleware pattern for auth validation",
+      "category": "code_pattern",
+      "strength": "critical",
+      "occurrences": 8,
+      "evidence": [
+        "test-session-abc123",
+        "test-session-def456",
+        "test-session-ghi789",
+        "test-session-jkl012",
+        "test-session-mno345",
+        "test-session-pqr678",
+        "test-session-stu901",
+        "test-session-vwx234"
+      ],
+      "detected_at": "2025-12-31T12:00:00Z"
+    },
+    {
+      "pattern_id": "anti_345678",
+      "description": "Avoid storing tokens in localStorage (XSS risk)",
+      "category": "anti_pattern",
+      "strength": "strong",
+      "occurrences": 3,
+      "evidence": [
+        "test-session-abc123",
+        "test-session-def456",
+        "test-session-ghi789"
+      ],
+      "detected_at": "2025-12-31T12:00:00Z"
+    },
+    {
+      "pattern_id": "pref_456789",
+      "description": "Prefer JWT over session storage for APIs",
+      "category": "preference",
+      "strength": "emerging",
+      "occurrences": 2,
+      "evidence": [
+        "test-session-abc123",
+        "test-session-def456"
+      ],
+      "detected_at": "2025-12-31T12:00:00Z"
+    }
+  ],
+  "count": 4,
+  "last_updated": "2025-12-31T12:00:00Z"
+}

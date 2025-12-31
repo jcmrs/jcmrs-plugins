@@ -1,0 +1,9 @@
+{"type":"user_message","timestamp":"2025-12-31T10:00:00Z","content":"Implement user authentication"}
+{"type":"tool_use","timestamp":"2025-12-31T10:01:00Z","tool_name":"Write","tool_input":{"file_path":"src/auth/routes.py","content":"# Auth routes..."}}
+{"type":"tool_result","timestamp":"2025-12-31T10:01:05Z","tool_name":"Write","tool_result":"File created successfully"}
+{"type":"assistant_message","timestamp":"2025-12-31T10:02:00Z","content":"Created authentication routes with JWT token generation"}
+{"type":"tool_use","timestamp":"2025-12-31T10:03:00Z","tool_name":"Edit","tool_input":{"file_path":"src/models/user.py","old_string":"class User:","new_string":"class User(Base):"}}
+{"type":"tool_result","timestamp":"2025-12-31T10:03:05Z","tool_name":"Edit","tool_result":"Edit successful"}
+{"type":"user_message","timestamp":"2025-12-31T10:05:00Z","content":"Add refresh token endpoint"}
+{"type":"tool_use","timestamp":"2025-12-31T10:06:00Z","tool_name":"Edit","tool_input":{"file_path":"src/auth/routes.py","old_string":"# Routes","new_string":"# Routes\n@router.post('/refresh')\nasync def refresh_token():"}}
+{"type":"tool_result","timestamp":"2025-12-31T10:06:05Z","tool_name":"Edit","tool_result":"Edit successful"}

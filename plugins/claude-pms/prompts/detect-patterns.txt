@@ -1,0 +1,248 @@
+# Pattern Detection Prompt - Semantic Extraction
+
+## Task
+Analyze episodic records from multiple sessions to detect recurring patterns, preferences, and anti-patterns.
+
+## Input
+$EPISODIC_RECORDS: JSON array of episodic records from past sessions:
+
+```json
+[
+  {
+    "session_id": "session-uuid-1",
+    "timestamp": "2025-12-31T10:00:00Z",
+    "task_summary": "...",
+    "user_preferences": [...],
+    "code_patterns": [...],
+    "anti_patterns": [...]
+  },
+  ...
+]
+```
+
+## Output Format
+Return a valid JSON object with detected patterns:
+
+```json
+{
+  "patterns": [
+    {
+      "pattern_id": "unique-id",
+      "description": "Clear, actionable pattern description",
+      "category": "preference|code_pattern|anti_pattern",
+      "strength": "emerging|strong|critical",
+      "occurrences": 5,
+      "confidence": "high|medium|low",
+      "evidence": [
+        {
+          "session_id": "session-uuid-1",
+          "quote": "Exact quote or example from session",
+          "context": "Brief context about when this occurred"
+        }
+      ],
+      "rationale": "Why this is a genuine pattern, not coincidence"
+    }
+  ],
+  "summary": {
+    "total_sessions_analyzed": 25,
+    "patterns_detected": 8,
+    "high_confidence": 5,
+    "medium_confidence": 2,
+    "low_confidence": 1
+  }
+}
+```
+
+## Instructions
+
+### 1. Frequency-Based Detection
+Apply thresholds:
+- **Emerging pattern**: 2+ occurrences across sessions
+- **Strong pattern**: 3+ occurrences
+- **Critical pattern**: 5+ occurrences
+
+### 2. Validate Genuine Patterns
+A genuine pattern must:
+- Appear consistently across unrelated sessions
+- Have clear rationale (not random)
+- Be actionable (can guide future behavior)
+- Not be coincidental (e.g., multiple sessions on same project feature)
+
+**Reject false patterns:**
+- Project-specific details ("always use variable name 'result'")
+- Coincidental clustering (3 sessions in one day on same topic)
+- Contradictory instances (pattern violated in recent sessions)
+- Overly specific ("use React with TypeScript and ESLint") - break into separate patterns
+
+### 3. Categorize Patterns
+
+**Preferences** (User's working style):
+- Testing preferences (TDD, coverage requirements)
+- Commit style (message format, frequency)
+- Code review expectations
+- Tool preferences
+- Documentation standards
+
+**Code Patterns** (Technical practices):
+- Language/framework conventions
+- Error handling strategies
+- Testing patterns
+- Architectural patterns
+- Naming conventions
+
+**Anti-Patterns** (Mistakes to avoid):
+- Common errors user corrected
+- Approaches explicitly discouraged
+- Bugs repeatedly introduced and fixed
+- Bad practices called out by user
+
+### 4. Extract Evidence
+For each pattern, collect:
+- Session IDs where pattern appeared
+- Exact quotes or examples
+- Context about when/why pattern was used
+- User corrections or feedback related to pattern
+
+**Evidence quality:**
+- Direct quotes > paraphrasing
+- Specific examples > vague references
+- Recent sessions > older sessions (preferences may evolve)
+
+### 5. Assess Confidence
+
+**High confidence** (clear, consistent, recent):
+- Appears in 5+ sessions
+- User explicitly stated preference
+- No contradictory instances
+- Appeared in recent sessions
+
+**Medium confidence** (likely genuine):
+- Appears in 3-4 sessions
+- Consistent but not explicitly stated
+- Minor variations acceptable
+- Mix of recent and older sessions
+
+**Low confidence** (uncertain):
+- Only 2 occurrences
+- Long gaps between occurrences
+- Possible contradiction
+- Ambiguous context
+
+### 6. Distinguish from Noise
+**Keep:**
+- Consistent user corrections ("Don't do X, do Y")
+- Repeated workflows (TDD, test → implement → deploy)
+- Explicit preferences ("Always...")
+- Frequent practices (error handling, testing, commits)
+
+**Filter out:**
+- Random variable names
+- Project-specific implementation details
+- One-time decisions
+- Temporary workarounds
+- Tool version numbers
+
+## Examples
+
+### Example Input
+```json
+[
+  {
+    "session_id": "session-1",
+    "user_preferences": ["Always run tests before commits"],
+    "code_patterns": ["Use TDD workflow"]
+  },
+  {
+    "session_id": "session-2",
+    "user_preferences": ["Always run tests before commits", "Use descriptive commit messages"],
+    "code_patterns": ["Use TDD workflow"]
+  },
+  {
+    "session_id": "session-3",
+    "user_preferences": ["Always run tests before commits"],
+    "code_patterns": []
+  }
+]
+```
+
+### Example Output
+```json
+{
+  "patterns": [
+    {
+      "pattern_id": "pref_001",
+      "description": "Always run tests before committing code",
+      "category": "preference",
+      "strength": "critical",
+      "occurrences": 3,
+      "confidence": "high",
+      "evidence": [
+        {
+          "session_id": "session-1",
+          "quote": "Always run tests before commits",
+          "context": "User preference extracted from feedback"
+        },
+        {
+          "session_id": "session-2",
+          "quote": "Always run tests before commits",
+          "context": "User preference extracted from feedback"
+        },
+        {
+          "session_id": "session-3",
+          "quote": "Always run tests before commits",
+          "context": "User preference extracted from feedback"
+        }
+      ],
+      "rationale": "Appears in 3 consecutive sessions without variation. Explicitly stated preference. Critical for code quality workflow."
+    },
+    {
+      "pattern_id": "code_001",
+      "description": "Use TDD workflow (test → implement → refactor)",
+      "category": "code_pattern",
+      "strength": "emerging",
+      "occurrences": 2,
+      "confidence": "medium",
+      "evidence": [
+        {
+          "session_id": "session-1",
+          "quote": "Use TDD workflow",
+          "context": "Observed pattern during component development"
+        },
+        {
+          "session_id": "session-2",
+          "quote": "Use TDD workflow",
+          "context": "Observed pattern during feature implementation"
+        }
+      ],
+      "rationale": "Observed in 2 sessions across different features. Consistent with preference for running tests. Likely to continue."
+    }
+  ],
+  "summary": {
+    "total_sessions_analyzed": 3,
+    "patterns_detected": 2,
+    "high_confidence": 1,
+    "medium_confidence": 1,
+    "low_confidence": 0
+  }
+}
+```
+
+## Pattern Merging
+If patterns are semantically similar, merge them:
+- "Always run tests" + "Run tests before commits" → "Always run tests before committing code"
+- "Use TypeScript" + "Use type hints" (in Python) → Separate patterns (different languages)
+
+## Quality Criteria
+- Patterns are specific and actionable
+- Evidence includes exact quotes
+- Confidence levels justified
+- Categories correctly assigned
+- Strength thresholds correctly applied
+- No duplicate patterns (merged if similar)
+- Rationale explains why pattern is genuine
+
+## Edge Cases
+- **Contradictory patterns**: Keep most recent, note evolution in rationale
+- **Project-specific vs. general**: Only include if applicable across projects
+- **Single occurrence**: Do not include (minimum 2 for emerging)
+- **Ambiguous category**: Prefer "preference" for user-driven, "code_pattern" for technical

@@ -1,0 +1,31 @@
+---
+# Sample configuration for testing
+triggers:
+  precompact: true
+  session_end: true
+  stop: false
+  session_start: false
+
+thresholds:
+  min_sessions: 10
+  emerging_pattern: 2
+  strong_pattern: 3
+  critical_pattern: 5
+
+privacy:
+  redact_sensitive: true
+  custom_redaction_patterns:
+    - "custom_api_key_.*"
+    - "internal_secret_.*"
+
+encoding:
+  prefer_context: true
+  fallback_jsonl: true
+
+extraction:
+  auto_extract: false
+  continuous_mode: false
+
+synthesis:
+  auto_synthesize: false
+  require_approval: true

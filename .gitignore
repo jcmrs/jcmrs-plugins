@@ -1,8 +1,5 @@
 # Project-specific .claude directory (framework configurations and user session data)
-.claude/conversations/
-.claude/diary/
-.claude/packages/
-.claude/data/
+.claude/
 
 # Node.js / Package managers
 node_modules/

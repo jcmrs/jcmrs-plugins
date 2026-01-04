@@ -81,6 +81,29 @@ Long-term learning system that transforms conversational history into actionable
 
 **Location:** `./plugins/claude-pms`
 
+---
+
+### Documentation Reader
+
+**Status:** 🧪 Testing Phase
+
+Documentation Reader for Axivo Claude Collaboration Platform, providing access through components, protocols, and competencies. Provides systematic access to Claude Collaboration Platform documentation, enabling both users and Claude Code to query and reference official documentation organized by platform architecture.
+
+**Features:**
+- **Architecture-Aware Documentation Access**: Understands platform structure (Components, Protocols, Competencies)
+- **Dual Use Cases**: Supports both user-initiated queries and agent self-reference
+- **Progressive Disclosure**: Lean core skill with focused resource files
+- **On-Demand Fetching**: Retrieves documentation from GitHub as needed
+
+**Commands:**
+- `/jcmrs:docs [search query]` — Search official platform documentation
+
+**Documentation Sources:**
+- **Wiki**: Platform architecture, components (Plugins, Documentation, Instructions, Memory), protocols (Equilibrium, Initialization, Response)
+- **Tutorials**: Practical competency development (Session structuring, Communication, Continuity, Customization, Measurement)
+
+**Location:** `./plugins/docs-reader`
+
 ## Installation
 
 ### Local Development
@@ -117,6 +140,11 @@ See individual plugin directories for complete documentation:
 - `plugins/claude-pms/examples/USAGE_EXAMPLES.md` - 7 workflow examples and troubleshooting
 - `plugins/claude-pms/VALIDATION_GUIDE.md` - End-to-end testing instructions
 - `plugins/claude-pms/CHANGELOG.md` - Version history and release notes
+
+### Documentation Reader
+- `plugins/docs-reader/` - Documentation Reader plugin
+- `plugins/docs-reader/README.md` - Usage guide and documentation structure
+- `plugins/docs-reader/skills/documentation-query/SKILL.md` - Query methodology and integration
 
 ## License
 

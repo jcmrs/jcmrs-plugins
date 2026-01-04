@@ -28,6 +28,11 @@
       "name": "claude-pms",
       "source": "./plugins/claude-pms",
       "description": "Procedural Memory System - Learns procedures, processes, and workflows from conversational history through three-tier architecture (Episodic → Semantic → Procedural). Shame on you."
+    },
+    {
+      "name": "docs-reader",
+      "source": "./plugins/docs-reader",
+      "description": "Documentation Reader for Axivo Claude Collaboration Platform, providing access through components, protocols, and competencies"
     }
   ]
 }

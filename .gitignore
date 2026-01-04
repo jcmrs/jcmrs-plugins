@@ -48,5 +48,6 @@ Thumbs.db
 
 # Local development directories
 .docs/
+plugins-dev/
 plugins/qwen-delegation/
 plugins/qwen-tool/
